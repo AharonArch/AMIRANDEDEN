@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לוי אדריכלים · הבית של אמיר ועדן</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0B0C;
+  --panel:#141416;
+  --card-dark:#1A1A1D;
+  --card-light:#ECEAE4;
+  --ink:#F2F0EC;
+  --ink-dim:#C7C6C2;
+  --muted:#8C8C92;
+  --accent:#FF5A2C;
+  --accent-2:#FF7A4D;
+  --accent-soft:rgba(255,90,44,.13);
+  --line:rgba(255,255,255,.08);
+  --line-2:rgba(255,255,255,.14);
+  --ok:#5FD08A;
+  --warn:#FFC24B;
+  --r:22px;
+  --grotesk:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Heebo',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--accent);color:#fff}
+a{color:inherit;text-decoration:none}
+.num{font-family:var(--grotesk);font-feature-settings:"tnum"}
+
+/* ============ LOGIN GATE ============ */
+#gate{
+  position:fixed;inset:0;z-index:100;
+  background:radial-gradient(120% 90% at 50% 0%,#241712 0%,#0B0B0C 55%);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.gate-card{
+  width:100%;max-width:420px;text-align:center;
+  animation:rise .7s cubic-bezier(.2,.8,.2,1) both;
+}
+.gate-mark{
+  font-family:var(--grotesk);font-size:13px;letter-spacing:.18em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:26px;
+}
+.gate-mark b{color:var(--accent)}
+.gate-card h1{
+  font-size:clamp(30px,7vw,44px);font-weight:800;line-height:1.05;
+  margin-bottom:12px;letter-spacing:-.01em;
+}
+.gate-card h1 span{color:var(--accent)}
+.gate-card p{color:var(--muted);font-size:15px;margin-bottom:30px;line-height:1.6}
+.gate-field{
+  display:flex;background:var(--card-dark);border:1px solid var(--line-2);
+  border-radius:100px;padding:6px;align-items:center;transition:.25s;
+}
+.gate-field:focus-within{border-color:var(--accent)}
+.gate-field input{
+  flex:1;background:none;border:none;outline:none;color:var(--ink);
+  font-family:var(--grotesk);font-size:18px;padding:0 18px;direction:ltr;text-align:right;
+  letter-spacing:.04em;
+}
+.gate-field input::placeholder{color:#55555b;letter-spacing:0}
+.gate-btn{
+  background:var(--accent);color:#fff;border:none;cursor:pointer;
+  height:48px;padding:0 26px;border-radius:100px;font-size:15px;font-weight:700;font-family:'Heebo';
+  display:grid;place-items:center;transition:.2s;flex-shrink:0;
+}
+.gate-btn:hover{background:var(--accent-2);transform:scale(1.05)}
+.gate-err{color:var(--accent);font-size:13.5px;margin-top:14px;min-height:18px;opacity:0;transition:.2s}
+.gate-err.show{opacity:1}
+.gate-hint{margin-top:34px;font-size:12.5px;color:#56565c;line-height:1.8}
+.gate-hint b{color:var(--ink-dim);font-family:var(--grotesk);direction:ltr;display:inline-block}
+
+/* ============ APP SHELL ============ */
+#app{display:none;max-width:1180px;margin:0 auto;padding:22px 20px 70px}
+#app.on{display:block;animation:fade .5s ease both}
+
+/* nav */
+nav{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:46px;
+}
+.brand{
+  display:flex;align-items:center;gap:9px;background:var(--card-dark);
+  border:1px solid var(--line);border-radius:100px;padding:11px 20px;font-weight:700;
+}
+.brand .star{color:var(--accent);font-size:17px}
+.tabs{
+  display:flex;gap:4px;background:var(--card-dark);border:1px solid var(--line);
+  border-radius:100px;padding:5px;overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  border:none;background:none;color:var(--muted);font-family:'Heebo';
+  font-size:14px;font-weight:500;padding:9px 17px;border-radius:100px;
+  cursor:pointer;white-space:nowrap;transition:.2s;
+}
+.tab:hover{color:var(--ink)}
+.tab.active{background:var(--accent);color:#fff;font-weight:700}
+.nav-spacer{flex:1}
+.date-pill{
+  background:#fff;color:#111;border-radius:100px;padding:11px 18px;font-size:13px;
+  font-weight:600;white-space:nowrap;
+}
+.date-pill .num{color:var(--accent)}
+.who{
+  display:flex;align-items:center;gap:9px;background:var(--card-dark);
+  border:1px solid var(--line);border-radius:100px;padding:7px 8px 7px 16px;
+  cursor:pointer;
+}
+.who .av{width:30px;height:30px;border-radius:50%;background:var(--accent);
+  display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+.who small{font-size:13px;font-weight:600}
+
+/* sections */
+.view{display:none}
+.view.show{display:block;animation:fade .45s ease both}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;
+}
+.eyebrow .n{font-family:var(--grotesk);color:var(--muted);font-size:15px}
+.eyebrow .lab{
+  background:var(--card-light);color:#16161a;border-radius:100px;
+  padding:7px 16px;font-size:13.5px;font-weight:600;display:inline-flex;gap:7px;align-items:center;
+}
+.eyebrow .lab .star{color:var(--accent)}
+
+/* ===== HERO / OVERVIEW ===== */
+.hero{position:relative;text-align:center;padding:30px 0 8px}
+.orb{
+  position:absolute;top:-6%;left:50%;transform:translateX(-50%);
+  width:min(560px,86vw);height:min(560px,86vw);border-radius:50%;
+  background:radial-gradient(circle at 50% 38%,rgba(255,90,44,.34),rgba(120,40,20,.20) 42%,transparent 66%);
+  filter:blur(2px);z-index:0;pointer-events:none;
+}
+.hero-tag{
+  position:relative;z-index:2;color:var(--muted);font-size:13px;max-width:340px;
+  margin:0 auto 22px;line-height:1.55;
+}
+.hero h1{
+  position:relative;z-index:2;font-size:clamp(34px,7vw,68px);line-height:1.02;
+  font-weight:300;letter-spacing:-.015em;margin-bottom:8px;
+}
+.hero h1 b{font-weight:900}
+.hero h1 .ac{color:var(--accent);font-weight:900}
+.hero h1 .ic{color:var(--accent);font-weight:400}
+.hero-sub{
+  position:relative;z-index:2;color:var(--muted);font-size:15px;margin-top:18px;
+}
+.scroll-dot{
+  position:relative;z-index:2;width:48px;height:48px;border:1px solid var(--line-2);
+  border-radius:50%;display:grid;place-items:center;margin:30px auto 0;color:var(--muted);
+  transition:.2s;cursor:pointer;
+}
+.scroll-dot:hover{border-color:var(--accent);color:var(--accent)}
+
+/* corner stats */
+.stat-rail{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px 0;margin:34px 0 0;
+}
+.stat{padding:0 4px}
+.stat .v{font-family:var(--grotesk);font-size:clamp(26px,4vw,40px);font-weight:500;line-height:1}
+.stat .v.dim{color:#4d4d53}
+.stat .k{color:var(--muted);font-size:13px;margin-top:7px}
+.stat:nth-child(2),.stat:nth-child(4){text-align:left}
+
+/* ticker pills */
+.pillrow{
+  display:flex;gap:14px;margin:40px 0 0;flex-wrap:wrap;align-items:stretch;
+}
+.pill-num{
+  display:flex;align-items:center;gap:7px;background:var(--card-dark);
+  border:1px solid var(--line);border-radius:100px;padding:14px 20px;
+}
+.dot{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--muted)}
+.dot.on{background:var(--accent);border-color:var(--accent)}
+.dot.dark{background:#000;border-color:#000}
+.pill-quote{
+  flex:1;min-width:260px;display:flex;align-items:center;gap:14px;
+  background:var(--accent);color:#1a0d07;border-radius:100px;padding:13px 20px;font-weight:600;font-size:14px;
+}
+.pill-quote .q{display:flex;gap:6px}
+.pill-quote .arrow{margin-inline-start:auto;width:30px;height:30px;border-radius:50%;
+  background:#000;color:#fff;display:grid;place-items:center;flex-shrink:0}
+.pill-team{display:flex;align-items:center;gap:10px;background:var(--card-dark);
+  border:1px solid var(--line);border-radius:100px;padding:9px 18px}
+.faces{display:flex}
+.faces span{width:30px;height:30px;border-radius:50%;margin-inline-start:-9px;
+  border:2px solid var(--card-dark);display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+
+/* ===== FEATURE CARDS (modules) ===== */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px}
+.card{border-radius:var(--r);padding:24px;min-height:230px;display:flex;flex-direction:column;
+  position:relative;overflow:hidden;cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.card:hover{transform:translateY(-5px)}
+.card.light{background:var(--card-light);color:#15151a}
+.card.dark{background:var(--card-dark);border:1px solid var(--line);color:var(--ink)}
+.card.accent{background:var(--accent);color:#fff}
+.card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:auto}
+.card .glyph{font-size:30px;color:var(--accent)}
+.card.accent .glyph{color:#fff}
+.card .go{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:#000;color:#fff;font-size:14px}
+.card.light .go{background:#15151a}
+.card.accent .go{background:#000}
+.card h3{font-size:19px;font-weight:800;margin:18px 0 6px}
+.card p{font-size:13.5px;line-height:1.55;opacity:.7}
+.card .ring{
+  position:absolute;inset:auto -30px -30px auto;width:150px;height:150px;
+  animation:spin 18s linear infinite;opacity:.5;
+}
+.card .ring text{font-family:var(--grotesk);font-size:11px;letter-spacing:.12em;fill:#15151a}
+.faux-row{display:flex;gap:8px;margin-top:14px}
+.faux-chip{background:rgba(0,0,0,.06);border-radius:100px;padding:7px 14px;font-size:12px;font-weight:700}
+.card.light .faux-chip.hi{background:var(--accent);color:#fff}
+.scam{background:#fff;border-radius:16px;padding:16px;text-align:center;margin-top:auto}
+.scam .glyph{font-size:26px}
+.scam small{display:block;color:var(--accent);font-weight:700;font-size:12px;margin-top:8px}
+
+/* booking CTA */
+.book{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;
+  background:var(--card-dark);border:1px solid var(--line);border-radius:var(--r);
+  padding:26px 30px;margin-top:18px;position:relative;overflow:hidden}
+.book::before{content:"";position:absolute;inset:0 0 0 auto;width:4px;background:var(--accent)}
+.book .lab{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.06em}
+.book h3{font-size:20px;font-weight:800;margin:9px 0 4px}
+.book p{color:var(--muted);font-size:14px;line-height:1.55}
+.book-btn{background:var(--accent);color:#fff;font-weight:700;font-size:14.5px;font-family:'Heebo';
+  padding:14px 26px;border-radius:100px;white-space:nowrap;transition:.2s}
+.book-btn:hover{background:var(--accent-2)}
+
+/* ===== generic blocks ===== */
+.head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.head-row h2{font-size:clamp(26px,4vw,40px);font-weight:300;line-height:1.08;letter-spacing:-.01em}
+.head-row h2 b{font-weight:900}
+.head-row h2 .ac{color:var(--accent);font-weight:900}
+.head-note{color:var(--muted);font-size:14px;max-width:280px;line-height:1.6}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+
+/* mini stat tiles */
+.tile{background:var(--card-dark);border:1px solid var(--line);border-radius:18px;padding:20px}
+.tile .v{font-family:var(--grotesk);font-size:30px;font-weight:500}
+.tile .v.ac{color:var(--accent)}
+.tile .k{color:var(--muted);font-size:13px;margin-top:6px}
+.bar{height:7px;border-radius:100px;background:rgba(255,255,255,.08);margin-top:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:100px}
+
+/* plans */
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.plan{background:var(--card-dark);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.25s}
+.plan:hover{border-color:var(--line-2)}
+.plan .frame{
+  aspect-ratio:16/10;background:
+    repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 12px,transparent 12px 24px),
+    radial-gradient(80% 80% at 50% 40%,#202024,#131316);
+  display:grid;place-items:center;position:relative;border-bottom:1px solid var(--line);
+}
+.plan .frame .ph{text-align:center;color:#5a5a60}
+.plan .frame .ph .ic{font-size:30px;color:var(--accent);opacity:.8}
+.plan .frame .ph .sq{width:34px;height:34px;border:2px solid var(--accent);border-radius:7px;margin:0 auto;opacity:.85}
+.plan .frame .ph small{display:block;font-size:12px;margin-top:8px}
+.plan .frame img{width:100%;height:100%;object-fit:cover;display:none}
+.plan .meta{padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
+.plan .meta h4{font-size:16px;font-weight:700}
+.plan .meta .tags{display:flex;gap:7px;margin-top:7px}
+.plan .meta .tg{background:rgba(255,255,255,.06);color:var(--muted);font-family:var(--grotesk);
+  font-size:11px;padding:3px 10px;border-radius:100px}
+.plan .stnum{font-family:var(--grotesk);color:#3f3f45;font-size:26px;font-weight:700}
+
+.legend{margin-top:18px}
+.legend h4{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card-dark);border:1px solid var(--line);border-radius:100px;
+  padding:8px 15px;font-size:13px}
+.chip b{color:var(--accent);font-family:var(--grotesk);margin-inline-end:6px}
+
+/* pipeline */
+.pipe{position:relative;padding-inline-start:6px}
+.step{display:flex;gap:18px;padding-bottom:26px;position:relative}
+.step:last-child{padding-bottom:0}
+.step .line{position:absolute;top:24px;right:11px;bottom:-2px;width:2px;background:var(--line)}
+.step:last-child .line{display:none}
+.step .node{width:24px;height:24px;border-radius:50%;flex-shrink:0;z-index:1;
+  display:grid;place-items:center;font-size:12px;border:2px solid var(--line);background:var(--bg);color:var(--muted)}
+.step.done .node{background:var(--ok);border-color:var(--ok);color:#0a2014}
+.step.now .node{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 5px var(--accent-soft)}
+.step .body{padding-top:1px}
+.step .body h4{font-size:16px;font-weight:700}
+.step .body p{color:var(--muted);font-size:13px;margin-top:3px;line-height:1.5}
+.step .st{font-family:var(--grotesk);font-size:11px;font-weight:700;padding:3px 11px;border-radius:100px;
+  display:inline-block;margin-top:9px;letter-spacing:.03em}
+.step.done .st{background:rgba(95,208,138,.14);color:var(--ok)}
+.step.now .st{background:var(--accent-soft);color:var(--accent)}
+.step.wait .st{background:rgba(255,255,255,.06);color:var(--muted)}
+
+/* ===== editable budget ===== */
+.btoolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.btoolbar .hint{color:var(--muted);font-size:13px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:'Heebo';font-weight:700;font-size:13.5px;
+  padding:10px 16px;border-radius:100px;border:1px solid var(--line-2);background:none;color:var(--ink);
+  cursor:pointer;transition:.2s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.fill{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.fill:hover{background:var(--accent-2);color:#fff}
+.btn .plus{width:15px;height:15px;position:relative;display:inline-block}
+.btn .plus::before,.btn .plus::after{content:"";position:absolute;background:currentColor;border-radius:2px}
+.btn .plus::before{top:6.5px;left:0;width:15px;height:2px}
+.btn .plus::after{left:6.5px;top:0;height:15px;width:2px}
+
+.chap{background:var(--card-dark);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.chap-head{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer}
+.chap-head .tri{width:0;height:0;border-inline-start:6px solid transparent;border-inline-end:6px solid transparent;
+  border-top:8px solid var(--accent);transition:transform .25s;flex-shrink:0}
+.chap.open .chap-head .tri{transform:rotate(180deg)}
+.chap-name{font-size:16px;font-weight:800;background:none;border:none;color:var(--ink);font-family:'Heebo';
+  flex:1;min-width:0;padding:6px 8px;border-radius:8px;transition:.15s}
+.chap-name:focus{outline:none;background:rgba(255,255,255,.05)}
+.chap-sum{font-family:var(--grotesk);font-size:15px;font-weight:500;color:var(--accent);direction:ltr;white-space:nowrap}
+.chap-body{padding:0 20px 14px;display:none}
+.chap.open .chap-body{display:block;animation:fade .3s ease}
+
+.sub{border-top:1px solid var(--line);padding:16px 0 6px}
+.sub-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.sub-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.sub-name{font-size:14.5px;font-weight:700;background:none;border:none;color:var(--ink-dim);font-family:'Heebo';
+  flex:1;min-width:120px;padding:5px 7px;border-radius:7px}
+.sub-name:focus{outline:none;background:rgba(255,255,255,.05);color:var(--ink)}
+.sub-sum{font-family:var(--grotesk);font-size:13px;color:var(--muted);direction:ltr}
+
+.qrow{display:grid;grid-template-columns:26px 1.4fr 1fr auto;gap:10px;align-items:center;
+  padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.qrow:last-child{border-bottom:none}
+.pick{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-2);background:none;cursor:pointer;
+  flex-shrink:0;transition:.15s;position:relative}
+.pick:hover{border-color:var(--accent)}
+.pick.on{border-color:var(--accent)}
+.pick.on::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--accent)}
+.in{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--ink);
+  font-family:'Heebo';font-size:13.5px;padding:10px 12px;width:100%;transition:.15s}
+.in:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,.06)}
+.in.cost{font-family:var(--grotesk);direction:ltr;text-align:left}
+.in::placeholder{color:#55555b}
+.rowtools{display:flex;align-items:center;gap:6px}
+.file-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:rgba(255,255,255,.03);
+  border-radius:10px;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;
+  white-space:nowrap;max-width:170px;transition:.15s}
+.file-btn:hover{border-color:var(--accent);color:var(--accent)}
+.file-btn.has{color:var(--ink);border-color:var(--accent-soft)}
+.file-btn .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;direction:ltr}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:none;cursor:pointer;
+  display:grid;place-items:center;color:var(--muted);transition:.15s;flex-shrink:0}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6}
+.sub-foot{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.linkbtn{background:none;border:none;color:var(--muted);font-family:'Heebo';font-size:12.5px;font-weight:700;
+  cursor:pointer;padding:5px 4px;transition:.15s}
+.linkbtn:hover{color:var(--accent)}
+.linkbtn.danger:hover{color:#ff6b4a}
+
+/* snapshot on home */
+.snap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px;cursor:pointer}
+.snap .tile:hover{border-color:var(--line-2)}
+
+/* ===== plans (folder-based) ===== */
+.plancard{background:var(--card-dark);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.pc-head{display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.fbadge{font-family:var(--grotesk);font-weight:700;font-size:13px;color:var(--accent);
+  background:var(--accent-soft);border:1px solid var(--accent-soft);border-radius:9px;padding:6px 11px;letter-spacing:.05em}
+.pc-title{font-size:16px;font-weight:800;flex:1;min-width:140px}
+.pc-file{font-family:var(--grotesk);font-size:12px;color:var(--muted);direction:ltr}
+.pc-src{font-family:var(--grotesk);font-size:11px;font-weight:700;color:var(--accent);
+  background:var(--accent-soft);border:1px solid var(--accent-soft);border-radius:100px;padding:6px 12px;letter-spacing:.03em}
+.up-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);
+  border-radius:100px;padding:9px 15px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;transition:.15s;white-space:nowrap}
+.up-btn:hover{border-color:var(--accent);color:var(--accent)}
+.pc-frame{aspect-ratio:16/9;background:radial-gradient(80% 80% at 50% 40%,#202024,#131316);
+  position:relative;display:grid;place-items:center;border-bottom:1px solid var(--line)}
+.pc-frame .ph{text-align:center;color:#5a5a60;padding:18px}
+.pc-frame .ph .sq{width:34px;height:34px;border:2px solid var(--accent);border-radius:7px;margin:0 auto 10px;opacity:.85}
+.pc-frame .ph small{font-size:12.5px}
+.pc-frame img,.pc-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.pc-frame img{object-fit:contain;background:#0c0c0d}
+.chat{padding:16px 18px}
+.chat h5{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.03em;margin-bottom:12px}
+.chat-thread{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;padding:2px 2px 4px}
+.chat-empty{color:#55555b;font-size:13px;padding:6px 2px}
+.msg{display:flex;max-width:82%}
+.msg.me{align-self:flex-start}
+.msg.them{align-self:flex-end}
+.bub{border-radius:14px;padding:9px 13px;border:1px solid var(--line)}
+.msg.me .bub{background:var(--accent-soft);border-color:rgba(255,90,44,.28);border-top-right-radius:5px}
+.msg.them .bub{background:var(--card-dark);border-top-left-radius:5px}
+.bub-top{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.bub-name{font-size:11.5px;font-weight:800;color:var(--accent)}
+.msg.them .bub-name{color:var(--ink-dim)}
+.bub-text{font-size:14px;line-height:1.5;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.bub-time{font-family:var(--grotesk);font-size:10.5px;color:var(--muted);margin-top:4px;direction:ltr;text-align:left}
+.msg-x{margin-inline-start:auto;width:20px;height:20px;border:none;background:none;color:var(--muted);
+  cursor:pointer;display:grid;place-items:center;opacity:0;transition:.15s;border-radius:5px}
+.bub:hover .msg-x{opacity:.7}
+.msg-x:hover{opacity:1;color:var(--accent)}
+.msg-x svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7}
+.chat-input{display:flex;gap:8px;margin-top:12px;align-items:center}
+.chat-text{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:100px;color:var(--ink);
+  font-family:'Heebo';font-size:14px;padding:12px 16px;transition:.15s}
+.chat-text:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,.06)}
+.chat-text::placeholder{color:#55555b}
+.chat-send{flex-shrink:0;width:42px;height:42px;border-radius:50%;border:none;background:var(--accent);color:#fff;
+  cursor:pointer;display:grid;place-items:center;transition:.18s}
+.chat-send:hover{background:var(--accent-2);transform:scale(1.05)}
+.chat-send svg{width:18px;height:18px;transform:scaleX(-1)}
+.frame-x{position:absolute;top:10px;inset-inline-start:10px;width:32px;height:32px;border-radius:9px;
+  background:rgba(10,10,11,.78);border:1px solid var(--line-2);color:var(--ink);cursor:pointer;
+  display:grid;place-items:center;backdrop-filter:blur(4px);transition:.15s;z-index:3}
+.frame-x:hover{border-color:var(--accent);color:var(--accent)}
+.frame-x svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+/* ===== signing ===== */
+.sign-bar{padding:15px 18px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sb-title{font-size:13px;color:var(--muted);font-weight:700;flex:1;min-width:130px}
+.sign-btn{border:none;cursor:pointer;font-family:'Heebo';font-weight:700;font-size:13.5px;padding:11px 18px;
+  border-radius:100px;background:var(--accent);color:#fff;transition:.2s}
+.sign-btn:hover{background:var(--accent-2)}
+.sign-btn.eden{background:#26262b;border:1px solid var(--line-2);color:var(--ink)}
+.sign-btn.eden:hover{border-color:var(--accent);color:var(--accent)}
+.sign-done{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--ok);
+  background:rgba(95,208,138,.12);border:1px solid rgba(95,208,138,.25);border-radius:100px;padding:9px 15px}
+.sign-ok-note{width:100%;color:var(--ok);font-size:12.5px;font-weight:700;margin-top:2px}
+
+.modal{position:fixed;inset:0;z-index:120;background:rgba(6,6,7,.74);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:18px}
+.modal.on{display:flex;animation:fade .25s ease}
+.msheet{background:#141416;border:1px solid var(--line-2);border-radius:20px;width:100%;max-width:540px;
+  max-height:92vh;overflow:auto;padding:26px}
+.msheet h3{font-size:21px;font-weight:800}
+.who-line{color:var(--accent);font-weight:700;font-size:14px;margin:4px 0 16px}
+.legal{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  font-size:13.5px;line-height:1.65;color:var(--ink-dim);margin-bottom:18px}
+.chk{display:flex;gap:11px;align-items:flex-start;margin-bottom:12px;cursor:pointer;font-size:13.5px;line-height:1.5;position:relative}
+.chk input{position:absolute;opacity:0;width:0;height:0}
+.chk .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-2);flex-shrink:0;margin-top:1px;
+  display:grid;place-items:center;transition:.15s}
+.chk input:checked+.box{background:var(--accent);border-color:var(--accent)}
+.chk input:checked+.box::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);margin-top:-2px}
+.sig-wrap{margin:4px 0 18px}
+.sig-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sig-head span{font-size:13px;color:var(--muted);font-weight:700}
+#sigpad{width:100%;height:170px;background:#fff;border-radius:12px;border:1px solid var(--line-2);touch-action:none;display:block;cursor:crosshair}
+.msheet .actions{display:flex;gap:10px;margin-top:4px}
+.mbtn{flex:1;border:none;cursor:pointer;font-family:'Heebo';font-weight:700;font-size:14.5px;padding:14px;border-radius:100px;transition:.2s}
+.mbtn.primary{background:var(--accent);color:#fff}
+.mbtn.primary:hover{background:var(--accent-2)}
+.mbtn.primary:disabled{background:#3a2a24;color:#7a6a64;cursor:not-allowed}
+.mbtn.ghost{background:none;border:1px solid var(--line-2);color:var(--ink)}
+.mbtn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.msuccess{text-align:center}
+.msuccess .seal{width:54px;height:54px;border-radius:50%;background:var(--accent-soft);border:1px solid var(--accent);
+  display:grid;place-items:center;margin:0 auto 14px}
+.msuccess .seal i{width:13px;height:23px;border:solid var(--accent);border-width:0 3px 3px 0;transform:rotate(45deg);display:block;margin-top:-4px}
+.msuccess p{color:var(--muted);font-size:13.5px;line-height:1.6;margin:6px 0 18px}
+.note-tiny{color:#6a6a70;font-size:12px;margin-top:14px;line-height:1.5}
+.mail-status{font-size:13px;font-weight:700;color:var(--accent);margin-top:10px;min-height:18px}
+
+/* ===== meetings ===== */
+.mcard{background:var(--card-dark);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow:hidden}
+.mc-head{display:flex;align-items:center;gap:12px;padding:18px 20px;flex-wrap:wrap}
+.mc-date{font-family:var(--grotesk);font-size:12px;color:var(--accent);background:var(--accent-soft);
+  border-radius:8px;padding:6px 11px;letter-spacing:.03em}
+.mc-title{font-size:16px;font-weight:800;flex:1;min-width:140px}
+.mc-watch{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:100px;
+  padding:9px 15px;font-size:12.5px;font-weight:700;color:var(--ink);transition:.15s;white-space:nowrap}
+.mc-watch:hover{border-color:var(--accent);color:var(--accent)}
+.mc-body{padding:0 20px 18px;border-top:1px solid var(--line)}
+.mc-sec{margin-top:16px}
+.mc-sec h6{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;margin-bottom:8px}
+.mc-text{font-size:14px;line-height:1.65;color:var(--ink-dim);white-space:pre-wrap}
+.mc-empty{color:#55555b;font-size:13px;padding:14px 0}
+.mc-toggle{background:none;border:1px solid var(--line-2);color:var(--ink);font-family:'Heebo';font-weight:700;
+  font-size:12.5px;padding:9px 15px;border-radius:100px;cursor:pointer;margin-top:12px;transition:.15s}
+.mc-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.mc-transcript{display:none;margin-top:12px;max-height:340px;overflow-y:auto;padding-inline-end:6px;
+  border-top:1px dashed var(--line);padding-top:12px}
+.mc-transcript.on{display:block}
+
+/* ===== brain ===== */
+.brain{background:var(--card-dark);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column}
+.brain-thread{display:flex;flex-direction:column;gap:14px;min-height:240px;max-height:48vh;overflow-y:auto;padding:4px 4px 8px}
+.brain-empty{color:#55555b;font-size:14px;text-align:center;margin:auto;padding:30px 10px;line-height:1.7}
+.bmsg{max-width:88%;border-radius:16px;padding:12px 15px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.bmsg.user{align-self:flex-start;background:var(--accent-soft);border:1px solid rgba(255,90,44,.28);border-top-right-radius:5px}
+.bmsg.bot{align-self:flex-end;background:#1c1c20;border:1px solid var(--line);border-top-left-radius:5px;color:var(--ink)}
+.bmsg.bot.think{color:var(--muted);font-style:italic}
+.brain-input{display:flex;gap:9px;margin-top:14px;align-items:center}
+.brain-text{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:100px;color:var(--ink);
+  font-family:'Heebo';font-size:14.5px;padding:13px 18px;transition:.15s}
+.brain-text:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,.06)}
+.brain-text::placeholder{color:#55555b}
+.brain-send{flex-shrink:0;width:46px;height:46px;border-radius:50%;border:none;background:var(--accent);color:#fff;
+  cursor:pointer;display:grid;place-items:center;transition:.18s}
+.brain-send:hover{background:var(--accent-2);transform:scale(1.05)}
+.brain-send:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.brain-send svg{width:19px;height:19px;transform:scaleX(-1)}
+.brain-note{font-size:12px;color:#6a6a70;margin-top:12px;line-height:1.5}
+
+/* ===== emails ===== */
+.em-info{color:#6a6a70;font-size:14px;line-height:1.7;background:var(--card-dark);border:1px solid var(--line);
+  border-radius:14px;padding:18px 20px}
+.em-thread{background:var(--card-dark);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.em-th-head{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;flex-wrap:wrap}
+.em-subj{font-size:15px;font-weight:800;flex:1;min-width:120px}
+.em-count{font-family:var(--grotesk);font-size:11px;color:var(--accent);background:var(--accent-soft);border-radius:7px;padding:5px 10px}
+.em-th-body{display:none;border-top:1px solid var(--line);padding:6px 20px 16px}
+.em-th-body.on{display:block}
+.em-msg{border-bottom:1px dashed var(--line);padding:14px 0}
+.em-msg:last-child{border-bottom:none}
+.em-meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.em-from{font-size:12.5px;font-weight:700;color:var(--ink-dim)}
+.em-date{font-family:var(--grotesk);font-size:11px;color:var(--muted);direction:ltr}
+.em-text{font-size:13.5px;line-height:1.65;color:var(--ink-dim);white-space:pre-wrap;word-break:break-word;max-height:260px;overflow-y:auto}
+
+/* site monitoring */
+.feed{display:flex;flex-direction:column;gap:0}
+.fitem{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.fitem:last-child{border-bottom:none}
+.fitem .fdate{font-family:var(--grotesk);color:var(--muted);font-size:12px;flex-shrink:0;width:64px;direction:ltr;text-align:left;padding-top:2px}
+.fitem .fbody h5{font-size:14.5px;font-weight:700}
+.fitem .fbody p{color:var(--muted);font-size:13px;margin-top:3px;line-height:1.5}
+.fitem .ftag{font-size:11px;font-weight:700;color:var(--accent)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
+.photo{aspect-ratio:1;border-radius:14px;background:
+  repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 10px,transparent 10px 20px),var(--card-dark);
+  border:1px solid var(--line);display:grid;place-items:center;color:#48484e;font-size:22px}
+
+/* contacts row */
+.contacts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
+.contact{background:var(--card-dark);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px;display:flex;flex-direction:column;transition:.3s}
+.contact:hover{border-color:var(--line-2);transform:translateY(-4px)}
+.contact .role{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.contact .nm{font-size:18px;font-weight:800;margin:6px 0 4px}
+.contact .ph{font-family:var(--grotesk);font-size:13px;color:var(--muted);direction:ltr;text-align:right}
+.cact{display:flex;gap:8px;margin-top:auto;padding-top:18px;flex-wrap:wrap}
+.cbtn{display:inline-flex;align-items:center;gap:6px;font-family:'Heebo';font-size:12.5px;font-weight:700;
+  padding:9px 14px;border-radius:100px;border:1px solid var(--line-2);color:var(--ink);
+  transition:.2s;cursor:pointer;white-space:nowrap}
+.cbtn:hover{border-color:var(--accent);color:var(--accent)}
+.cbtn.fill{background:var(--accent);border-color:var(--accent);color:#fff}
+.cbtn.fill:hover{background:var(--accent-2);color:#fff}
+.cbtn.off{opacity:.45;cursor:default}
+.cbtn.off:hover{border-color:var(--line-2);color:var(--ink)}
+.cbtn .ic{font-size:14px}
+
+footer{margin-top:60px;padding-top:26px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:12.5px}
+footer .star{color:var(--accent)}
+
+/* arrows */
+.side-arrow{position:fixed;top:50%;transform:translateY(-50%);width:46px;height:46px;
+  border:1px solid var(--line-2);border-radius:50%;display:none;place-items:center;
+  color:var(--muted);background:rgba(11,11,12,.6);backdrop-filter:blur(6px);cursor:pointer;z-index:40;transition:.2s}
+.side-arrow:hover{border-color:var(--accent);color:var(--accent)}
+.side-arrow.l{left:14px}.side-arrow.r{right:14px}
+#app.on ~ .side-arrow{display:grid}
+
+/* animations */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+
+/* responsive */
+@media(max-width:860px){
+  .cards,.grid3{grid-template-columns:1fr}
+  .grid2,.plan-grid{grid-template-columns:1fr}
+  .contacts{grid-template-columns:1fr 1fr}
+  .nav-spacer{display:none}
+  nav{margin-bottom:34px}
+  .side-arrow{display:none!important}
+  .qrow{grid-template-columns:26px 1fr;gap:8px 10px}
+  .qrow .in.cost{grid-column:2}
+  .rowtools{grid-column:1 / -1;justify-content:flex-end}
+  .file-btn{max-width:none;flex:1}
+  .snap{grid-template-columns:1fr}
+  .contacts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN GATE ===================== -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-mark"><b>✻</b> לוי אדריכלים · פורטל לקוחות</div>
+    <h1>הבית של <span>אמיר ועדן</span></h1>
+    <p>הזינו את מספר הטלפון הרשום בפרויקט כדי להיכנס לאפליקציה.</p>
+    <div class="gate-field">
+      <input id="phone" type="tel" inputmode="numeric" placeholder="05X-XXX-XXXX" autocomplete="off">
+      <button class="gate-btn" id="enter">כניסה</button>
+    </div>
+    <div class="gate-err" id="err">מספר לא מזוהה. נסו את הטלפון הרשום בפרויקט.</div>
+    <div class="gate-hint">
+      גישה מאובטחת לפי מספר הטלפון הרשום בפרויקט.
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<main id="app">
+
+  <!-- NAV -->
+  <nav>
+    <div class="brand"><span class="star">✻</span> לוי אדריכלים</div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-v="overview">סקירה</button>
+      <button class="tab" data-v="plans">תוכניות</button>
+      <button class="tab" data-v="permit">היתר בנייה</button>
+      <button class="tab" data-v="budget">תקציב</button>
+      <button class="tab" data-v="site">מעקב אתר</button>
+      <button class="tab" data-v="meetings">פגישות</button>
+      <button class="tab" data-v="emails">התכתבויות</button>
+      <button class="tab" data-v="brain">המוח</button>
+      <button class="tab" data-v="contacts">אנשי קשר</button>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="date-pill">היום <span class="num" id="today">—</span></div>
+    <div class="who" id="logout" title="התנתקות">
+      <small id="whoName">אמיר ועדן</small>
+      <div class="av" id="whoAv">א</div>
+    </div>
+  </nav>
+
+  <!-- ===== OVERVIEW ===== -->
+  <section class="view show" data-view="overview">
+    <div class="hero">
+      <div class="orb"></div>
+      <div class="hero-tag">אפליקציה שמלווה אתכם בשלב הרישוי והבנייה ומרכזת את כל מה שקורה בפרויקט במקום אחד</div>
+      <h1>הבית של <span class="ac">אמיר ועדן</span></h1>
+      <div class="hero-sub">וילה פרטית · שתי קומות + גג · ג'וליס</div>
+    </div>
+
+    <div class="stat-rail" id="stats">
+      <div class="stat"><div class="v num">2+1</div><div class="k">קומות + גג</div></div>
+      <div class="stat"><div class="v num">2</div><div class="k">חניות מקורות</div></div>
+      <div class="stat"><div class="v num">1</div><div class="k">בריכה פרטית</div></div>
+      <div class="stat"><div class="v num">1:100</div><div class="k">קנ״מ תוכניות</div></div>
+    </div>
+
+    <div class="pillrow">
+      <div class="pill-num">
+        <span class="dot on"></span><span class="dot dark"></span><span class="dot"></span>
+      </div>
+      <div class="pill-quote">
+        <span class="q">התוכניות האדריכליות הוגשו לעיון בתאריך 12.06.2026</span>
+      </div>
+      <div class="pill-team" onclick="go('contacts')" style="cursor:pointer">
+        <div class="faces">
+          <span style="background:#FF5A2C">א</span>
+          <span style="background:#3a3a40">ע</span>
+          <span style="background:#222">ו</span>
+        </div>
+        <span style="font-size:13px;color:var(--muted)">אנשי הקשר</span>
+      </div>
+    </div>
+
+    <div class="snap" onclick="go('budget')">
+      <div class="tile"><div class="v ac num" id="sTotal">₪0</div><div class="k">תקציב נבחר עד כה</div></div>
+      <div class="tile"><div class="v num" id="sQuotes">0</div><div class="k">הצעות מחיר שהתקבלו</div></div>
+      <div class="tile"><div class="v num" id="sPct">0%</div><div class="k">השלמת תמחור הפרויקט</div>
+        <div class="bar"><i id="sBar" style="width:0%"></i></div></div>
+    </div>
+
+    <div style="margin:60px 0 30px">
+      <div class="eyebrow"><span class="n">01</span>
+        <span class="lab">על הפרויקט <span class="star">✻</span> מרזוק־טריף</span>
+      </div>
+      <h2 style="font-size:clamp(26px,4.4vw,46px);font-weight:300;line-height:1.1;letter-spacing:-.01em">
+        כל מה שקורה בפרויקט במקום אחד —<br>
+        <span style="color:var(--accent);font-weight:900">תוכניות</span>,
+        <b style="font-weight:900">היתר</b>, תקציב ומעקב אתר.
+      </h2>
+    </div>
+
+    <!-- module cards -->
+    <div class="cards">
+      <div class="card light" onclick="go('plans')">
+        <div class="top"><span class="glyph">✻</span></div>
+        <div class="faux-row">
+          <span class="faux-chip hi">קומת קרקע</span>
+          <span class="faux-chip">קומה א'</span>
+        </div>
+        <h3>תוכניות אדריכליות</h3>
+        <p>פיתוח שטח, קומת קרקע, קומה א' וגג — כל הסטים במקום אחד.</p>
+      </div>
+
+      <div class="card accent" onclick="go('permit')">
+        <div class="top"><span class="glyph">✻</span></div>
+        <div class="scam" style="background:rgba(0,0,0,.18)">
+          <small style="color:#fff">סטטוס נוכחי · הגשה לעיון</small>
+        </div>
+        <h3>סטטוס ההיתר</h3>
+        <p style="opacity:.85">בקשת ההיתר מול הוועדה המקומית, שלב אחר שלב.</p>
+      </div>
+
+      <div class="card dark" onclick="go('site')">
+        <div class="top"><span class="glyph">✻</span></div>
+        <svg class="ring" viewBox="0 0 150 150">
+          <defs><path id="rp" d="M75,75 m-58,0 a58,58 0 1,1 116,0 a58,58 0 1,1 -116,0"/></defs>
+          <text fill="#8C8C92"><textPath href="#rp">פיקוח · תכנון · ביצוע · מסירה · פיקוח · תכנון ·</textPath></text>
+        </svg>
+        <h3>מעקב אתר</h3>
+        <p>עדכוני שטח ותמונות התקדמות מהמפקח וואיל טריף, לאורך הבנייה.</p>
+      </div>
+    </div>
+
+    <div class="book">
+      <div>
+        <div class="lab">פגישה עם האדריכל</div>
+        <h3>רוצים לעבור על הפרויקט יחד?</h3>
+        <p>קבעו שיחה או פגישה של 30 דקות עם אהרון לוי, במועד שנוח לכם.</p>
+      </div>
+      <a class="book-btn" href="https://calendly.com/aharonarchitecture/30min" target="_blank" rel="noopener">קביעת פגישה</a>
+    </div>
+  </section>
+
+  <!-- ===== PLANS ===== -->
+  <section class="view" data-view="plans">
+    <div class="eyebrow"><span class="n">02</span><span class="lab">תוכניות הפרויקט <span class="star">✻</span> AMIREDEN</span></div>
+    <div class="head-row">
+      <h2>תוכניות <span class="ac">ה</span><b>פרויקט</b></h2>
+      <div class="head-note">כל סט תוכניות לפי תיקיית הפרויקט (000–007). העלו קובץ לכל סעיף, והוסיפו הערות מתחת לכל תוכנית.</div>
+    </div>
+
+    <div id="plansList"></div>
+  </section>
+
+  <!-- ===== PERMIT ===== -->
+  <section class="view" data-view="permit">
+    <div class="eyebrow"><span class="n">03</span><span class="lab">היתר בנייה <span class="star">✻</span> ועדה מקומית</span></div>
+    <div class="head-row">
+      <h2>סטטוס <span class="ac">בקשת</span><br>ה<b>היתר</b></h2>
+      <div class="head-note">מעקב אחר בקשת ההיתר מול מרחב התכנון. כל שלב מתעדכן על ידי המשרד.</div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:24px">
+      <div class="tile"><div class="v ac num">1/9</div><div class="k">שלב נוכחי בתהליך</div></div>
+      <div class="tile"><div class="v num">12.06</div><div class="k">תאריך ההגשה לעיון</div></div>
+      <div class="tile"><div class="v num">~11%</div><div class="k">השלמת מסלול ההיתר</div>
+        <div class="bar"><i style="width:11%"></i></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="pipe">
+        <div class="step done"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>תכנון אדריכלי</h4><p>סט תוכניות 1:100 הושלם ונחתם ע״י אהרון לוי.</p>
+          <span class="st">הושלם</span></div></div>
+
+        <div class="step now"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>הגשה למרחב התכנון</h4><p>התוכניות הוגשו לעיון בתאריך 12.06.2026, ממתינות לקליטה.</p>
+          <span class="st">בתהליך עכשיו</span></div></div>
+
+        <div class="step wait"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>בדיקת תנאי סף</h4><p>בדיקת שלמות הבקשה והמסמכים הנדרשים.</p>
+          <span class="st">ממתין</span></div></div>
+
+        <div class="step wait"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>קליטה ופרסום</h4><p>פתיחת תיק בוועדה ופרסום להתנגדויות במידת הצורך.</p>
+          <span class="st">ממתין</span></div></div>
+
+        <div class="step wait"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>דיון בוועדה המקומית</h4><p>בחינת הבקשה והחלטת הוועדה.</p>
+          <span class="st">ממתין</span></div></div>
+
+        <div class="step wait"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>השלמות ודרישות</h4><p>מענה לדרישות הוועדה ויועצים, ככל שיידרשו.</p>
+          <span class="st">ממתין</span></div></div>
+
+        <div class="step wait"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>אגרות והיטלים</h4><p>חישוב ותשלום אגרות בנייה והיטלי פיתוח.</p>
+          <span class="st">ממתין</span></div></div>
+
+        <div class="step wait"><div class="line"></div><div class="node"></div>
+          <div class="body"><h4>קבלת היתר בנייה</h4><p>הנפקת ההיתר — אישור לתחילת עבודות.</p>
+          <span class="st">ממתין</span></div></div>
+
+        <div class="step wait"><div class="node"></div>
+          <div class="body"><h4>ביצוע וטופס 4</h4><p>בנייה, פיקוח עליון ואכלוס.</p>
+          <span class="st">ממתין</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BUDGET ===== -->
+  <section class="view" data-view="budget">
+    <div class="eyebrow"><span class="n">04</span><span class="lab">תקציב הפרויקט <span class="star">✻</span> ש״ח</span></div>
+    <div class="head-row">
+      <h2>תקציב <span class="ac">ה</span><b>פרויקט</b></h2>
+      <div class="head-note">פרקים, פרקי משנה והצעות מחיר — הכל ניתן לעריכה. סמנו עיגול ליד ההצעה הנבחרת והסכום יתעדכן בכל הפרויקט.</div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:22px">
+      <div class="tile"><div class="v ac num" id="bTotal">₪0</div><div class="k">סך ההצעות שנבחרו</div></div>
+      <div class="tile"><div class="v num" id="bQuotes">0</div><div class="k">הצעות מחיר שהועלו</div></div>
+      <div class="tile"><div class="v num" id="bSubs">0</div><div class="k">פרקי משנה בתקציב</div>
+        <div class="bar"><i id="bBar" style="width:0%"></i></div></div>
+    </div>
+
+    <div class="btoolbar">
+      <span class="hint">לחיצה על פרק ראשי פותחת את פרקי המשנה שבתוכו</span>
+      <button class="btn fill" id="addChap"><span class="plus"></span> הוספת פרק ראשי</button>
+    </div>
+
+    <div id="budgetTree"></div>
+  </section>
+
+  <!-- ===== SITE ===== -->
+  <section class="view" data-view="site">
+    <div class="eyebrow"><span class="n">05</span><span class="lab">מעקב אתר <span class="star">✻</span> פיקוח</span></div>
+    <div class="head-row">
+      <h2>מעקב <span class="ac">התקדמות</span><br>ה<b>בנייה</b></h2>
+      <div class="head-note">פיקוח בנייה: וואיל טריף. העדכונים נכנסים לכאן לאורך הבנייה.</div>
+    </div>
+
+    <div class="grid3" style="margin-bottom:22px">
+      <div class="tile"><div class="v ac num">0%</div><div class="k">התקדמות ביצוע</div>
+        <div class="bar"><i style="width:2%"></i></div></div>
+      <div class="tile"><div class="v num">לפני</div><div class="k">שלב — קבלת היתר</div></div>
+      <div class="tile"><div class="v num">וואיל</div><div class="k">מפקח הבנייה בפרויקט</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h4 style="font-size:15px;margin-bottom:6px">יומן אתר</h4>
+        <div class="feed">
+          <div class="fitem"><div class="fdate">12.06</div>
+            <div class="fbody"><span class="ftag">תכנון</span>
+              <h5>סט התוכניות הוגש לעיון</h5>
+              <p>התוכניות האדריכליות הועברו למרחב התכנון לקראת פתיחת תיק.</p></div></div>
+          <div class="fitem"><div class="fdate">בקרוב</div>
+            <div class="fbody"><span class="ftag">מדידה</span>
+              <h5>סימון וגבהים באתר</h5>
+              <p>לאחר קבלת היתר — סימון קווי בניין, גבהים וקו אפס.</p></div></div>
+          <div class="fitem"><div class="fdate">בקרוב</div>
+            <div class="fbody"><span class="ftag">שלד</span>
+              <h5>תחילת עבודות עפר</h5>
+              <p>חפירה, יסודות ורצפת קומת קרקע.</p></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h4 style="font-size:15px;margin-bottom:14px">תיעוד מהאתר</h4>
+        <div class="photo-grid">
+          <div class="photo"></div><div class="photo"></div><div class="photo"></div>
+          <div class="photo"></div><div class="photo"></div><div class="photo"></div>
+        </div>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:14px;line-height:1.5">
+          תמונות התקדמות יתווספו אוטומטית בכל ביקור פיקוח באתר.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MEETINGS ===== -->
+  <section class="view" data-view="meetings">
+    <div class="eyebrow"><span class="n">06</span><span class="lab">פגישות הפרויקט <span class="star">✻</span> Fathom</span></div>
+    <div class="head-row">
+      <h2>פגישות <span class="ac">ה</span><b>פרויקט</b></h2>
+      <div class="head-note">סיכום מלא ותמלול של כל פגישה. לחיצה על "צפייה בהקלטה" פותחת את ההקלטה ב-Fathom.</div>
+    </div>
+    <div id="meetingsList"></div>
+  </section>
+
+  <!-- ===== EMAILS ===== -->
+  <section class="view" data-view="emails">
+    <div class="eyebrow"><span class="n">07</span><span class="lab">התכתבויות <span class="star">✻</span> מייל</span></div>
+    <div class="head-row">
+      <h2>ההתכתבויות <span class="ac">ש</span><b>לי</b></h2>
+      <div class="head-note">כל ההתכתבות שלך עם המשרד במייל, במקום אחד ומעודכן.</div>
+    </div>
+    <div id="emailsBox"></div>
+  </section>
+
+  <!-- ===== BRAIN ===== -->
+  <section class="view" data-view="brain">
+    <div class="eyebrow"><span class="n">08</span><span class="lab">המוח <span class="star">✻</span> Claude</span></div>
+    <div class="head-row">
+      <h2>המוח של <span class="ac">ה</span><b>פרויקט</b></h2>
+      <div class="head-note">עוזר חכם שמכיר את הפרויקט — התוכניות, התקציב, הפגישות והפרטים — ויודע גם הכל על העולם. שאלו כל דבר.</div>
+    </div>
+    <div class="brain">
+      <div class="brain-thread" id="brainThread"></div>
+      <div class="brain-input">
+        <input class="brain-text" id="brainText" placeholder="שאלו את המוח… למשל: מה היה בפגישה האחרונה? מה צבע המטבח?" maxlength="1000">
+        <button class="brain-send" id="brainSend" aria-label="שליחה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg></button>
+      </div>
+      <div class="brain-note" id="brainNote"></div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTS ===== -->
+  <section class="view" data-view="contacts">
+    <div class="eyebrow"><span class="n">09</span><span class="lab">אנשי הקשר <span class="star">✻</span> בפרויקט</span></div>
+    <div class="head-row">
+      <h2>אנשי <span class="ac">הקשר</span><br>ב<b>פרויקט</b></h2>
+      <div class="head-note">לחיצה על כפתור פותחת שיחה, וואטסאפ או קביעת פגישה ישירות.</div>
+    </div>
+
+    <div class="contacts">
+      <div class="contact">
+        <div class="role">אדריכל · לוי אדריכלים</div>
+        <div class="nm">אהרון לוי</div>
+        <div class="ph">aharonarchitecture</div>
+        <div class="cact">
+          <a class="cbtn fill" href="https://wa.me/972584242112" target="_blank" rel="noopener">וואטסאפ</a>
+          <a class="cbtn" href="https://calendly.com/aharonarchitecture/30min" target="_blank" rel="noopener">קביעת פגישה</a>
+        </div>
+      </div>
+
+      <div class="contact">
+        <div class="role">לקוח</div>
+        <div class="nm">אמיר מרזוק</div>
+        <div class="ph">052-641-3141</div>
+        <div class="cact">
+          <a class="cbtn fill" href="https://wa.me/972526413141" target="_blank" rel="noopener">וואטסאפ</a>
+          <a class="cbtn" href="tel:0526413141">טלפון</a>
+        </div>
+      </div>
+
+      <div class="contact">
+        <div class="role">לקוחה</div>
+        <div class="nm">עדן טריף</div>
+        <div class="ph">055-662-7546</div>
+        <div class="cact">
+          <a class="cbtn fill" href="https://wa.me/972556627546" target="_blank" rel="noopener">וואטסאפ</a>
+          <a class="cbtn" href="tel:0556627546">טלפון</a>
+        </div>
+      </div>
+
+      <div class="contact">
+        <div class="role">פיקוח בנייה</div>
+        <div class="nm">וואיל טריף</div>
+        <div class="ph">052-399-7081</div>
+        <div class="cact">
+          <a class="cbtn fill" href="https://wa.me/972523997081" target="_blank" rel="noopener">וואטסאפ</a>
+          <a class="cbtn" href="tel:0523997081">טלפון</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div><span class="star">✻</span> לוי אדריכלים · אפליקציית פרויקט</div>
+      <div>הבית של אמיר ועדן · ג'וליס · 2026</div>
+    </footer>
+  </section>
+</main>
+
+<div class="modal" id="signModal">
+  <div class="msheet">
+    <div id="signForm">
+      <h3>אישור וחתימת תוכניות</h3>
+      <div class="who-line" id="signWho">חותם/ת: —</div>
+      <div class="legal" id="signLegal"></div>
+      <label class="chk"><input type="checkbox" id="chk1"><span class="box"></span>
+        <span>קראתי ועברתי על התוכניות, והן הוסברו לי. אני מבין/ה את תכולתן ואת משמעותן.</span></label>
+      <label class="chk"><input type="checkbox" id="chk2"><span class="box"></span>
+        <span>אני מאשר/ת את התוכניות כפי שהוצגו, ומסכים/ה להתקדמות הפרויקט לשלב הבא על בסיסן.</span></label>
+      <div class="sig-wrap">
+        <div class="sig-head"><span>חתימה — ציירו כאן באצבע או בעכבר</span>
+          <button class="linkbtn" id="sigClear" type="button">ניקוי</button></div>
+        <canvas id="sigpad"></canvas>
+      </div>
+      <div class="actions">
+        <button class="mbtn ghost" id="signCancel" type="button">ביטול</button>
+        <button class="mbtn primary" id="signSubmit" type="button" disabled>אישור וחתימה</button>
+      </div>
+    </div>
+    <div id="signDone" class="msuccess" style="display:none">
+      <div class="seal"><i></i></div>
+      <h3>התוכניות אושרו ונחתמו</h3>
+      <p id="doneMsg"></p>
+      <div class="actions" style="flex-direction:column">
+        <button class="mbtn primary" id="dlBtn" type="button">הורדת מסמך האישור (PDF)</button>
+        <button class="mbtn ghost" id="mailBtn" type="button">שליחת המסמך במייל לכל הצדדים</button>
+      </div>
+      <div class="note-tiny" id="mailNote"></div>
+      <div class="mail-status" id="mailStatus"></div>
+      <button class="mbtn ghost" id="doneClose" type="button" style="margin-top:12px">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+/* ---------- date ---------- */
+(function(){
+  const d=new Date();
+  const days=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0');
+  document.getElementById('today').textContent=dd+'.'+mm;
+})();
+
+/* ====== EmailJS — מלאו 3 ערכים כדי להפעיל שליחה אוטומטית ====== */
+const EMAILJS_CFG={ publicKey:'3JBCwziQJLodU4OiY', serviceId:'service_2gzbt2p', templateId:'template_6oubwug' };
+const EMAILJS_ON=!!(EMAILJS_CFG.publicKey&&EMAILJS_CFG.serviceId&&EMAILJS_CFG.templateId);
+if(EMAILJS_ON&&window.emailjs){ try{ emailjs.init({publicKey:EMAILJS_CFG.publicKey}); }catch(e){} }
+
+/* ====== שרת חי (Vercel): מלאו את הכתובת אחרי הפריסה ====== */
+const BACKEND_URL=''; // למשל 'https://amirandeden-backend.vercel.app'
+// קוד הגישה האישי של הלקוח — מגיע מהקישור (?k=...) ונשמר בדפדפן
+let ACCESS_TOKEN='';
+(function(){ try{
+  const u=new URLSearchParams(location.search).get('k');
+  if(u){ localStorage.setItem('amireden_key',u); }
+  ACCESS_TOKEN=localStorage.getItem('amireden_key')||'';
+}catch(e){} })();
+const LIVE=!!(BACKEND_URL&&ACCESS_TOKEN);
+
+/* ---------- login gate ---------- */
+let role='viewer';
+let userId='';
+const VALID={ '0526413141':{n:'אמיר מרזוק',a:'א'},
+              '0556627546':{n:'עדן טריף',a:'ע'},
+              '0523997081':{n:'וואיל טריף',a:'ו'},
+              '0584242112':{n:'אהרון לוי',a:'ל'} };
+const phone=document.getElementById('phone'),err=document.getElementById('err');
+function tryEnter(){
+  const raw=(phone.value||'').replace(/\D/g,'');
+  if(VALID[raw]){
+    const u=VALID[raw];
+    role=(raw==='0584242112')?'architect':'viewer';
+    userId=raw==='0526413141'?'amir':raw==='0556627546'?'eden':raw==='0523997081'?'wael':'architect';
+    const isClient=(raw==='0526413141'||raw==='0556627546');
+    document.getElementById('whoName').textContent=isClient?'אמיר ועדן':u.n;
+    document.getElementById('whoAv').textContent=u.a;
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').classList.add('on');
+    try{ PLANS.forEach(p=>renderChat(p.f)); }catch(e){}
+  } else { err.classList.add('show'); phone.focus(); }
+}
+document.getElementById('enter').addEventListener('click',tryEnter);
+phone.addEventListener('keydown',e=>{ if(e.key==='Enter')tryEnter(); err.classList.remove('show'); });
+phone.addEventListener('input',()=>err.classList.remove('show'));
+
+/* ---------- tab switching ---------- */
+const order=['overview','plans','permit','budget','site','meetings','emails','brain','contacts'];
+let cur=0;
+function go(v){
+  cur=order.indexOf(v); if(cur<0)cur=0;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.v===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('show',s.dataset.view===v));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(t)go(t.dataset.v);
+});
+
+/* ---------- logout ---------- */
+document.getElementById('logout').addEventListener('click',()=>{
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('gate').style.display='flex';
+  phone.value=''; go('overview');
+});
+
+/* ====================== EDITABLE BUDGET ====================== */
+const TRASH='<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>';
+const $=id=>document.getElementById(id);
+const esc=s=>(s==null?'':(''+s)).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const num=v=>parseFloat((''+(v==null?'':v)).replace(/[^\d.]/g,''))||0;
+const fmt=n=>'₪'+Math.round(n).toLocaleString('en-US');
+
+const mkRow=()=>({supplier:'',cost:'',file:null});
+const mkSub=name=>({name,sel:-1,rows:[mkRow(),mkRow(),mkRow()]});
+const gymChapter=()=>({name:'חדר כושר ביתי',open:false,subs:[
+  mkSub('אריחי רצפה לחדר כושר'),mkSub('ספסל רב שימושי'),mkSub('מתקן מקבילים'),
+  mkSub('סט דאמבלים מורחב'),mkSub('מכונת כבלים כוללת סמית מאשין'),mkSub('מוטות: טראפ אולימפי ודיימונד'),
+  mkSub('סט צלחות גדולות'),mkSub('אופניים מכניים'),mkSub('הליכון מכני'),mkSub('סט רצועות')]});
+const SEED=[
+  {name:'עבודות עפר ושלד',open:false,subs:[mkSub('חפירה ועבודות עפר'),mkSub('יסודות'),mkSub('שלד בטון'),mkSub('איטום')]},
+  {name:'גמרים פנימיים',open:false,subs:[mkSub('ריצוף וחיפוי'),mkSub('צבע וגבס'),mkSub('דלתות פנים')]},
+  {name:'מערכות',open:false,subs:[mkSub('חשמל ותקשורת'),mkSub('אינסטלציה'),mkSub('מיזוג אוויר')]},
+  {name:'אלומיניום ונגרות',open:false,subs:[mkSub('חלונות וויטרינות'),mkSub('נגרות ודלתות')]},
+  {name:'מטבח וארונות',open:false,subs:[mkSub('מטבח'),mkSub('ארונות')]},
+  {name:'בריכה ופיתוח חוץ',open:false,subs:[mkSub('בריכה'),mkSub('גינון והשקיה'),mkSub('ריצוף חוץ')]},
+  {name:'אדריכלות ותכנון',open:false,subs:[
+    {name:'תכנון אדריכלי',sel:0,rows:[{supplier:'לוי אדריכלים',cost:'180000',file:{name:'הסכם-תכנון.pdf'}},mkRow(),mkRow()]}]},
+  {name:'פיקוח וניהול',open:false,subs:[mkSub('פיקוח עליון'),mkSub('ניהול פרויקט')]},
+  gymChapter(),
+  {name:'בלתי צפוי',open:false,subs:[mkSub('רזרבה (~10%)')]}
+];
+
+function load(){ try{const s=localStorage.getItem('marzouk_budget'); if(s)return JSON.parse(s);}catch(e){} 
+  return JSON.parse(JSON.stringify(SEED)); }
+function save(){ try{localStorage.setItem('marzouk_budget',JSON.stringify(state));}catch(e){} }
+let state=load();
+(function migrateGym(){
+  let v=0; try{v=+localStorage.getItem('marzouk_budget_v')||0;}catch(e){}
+  if(v<2 && !state.some(c=>c.name==='חדר כושר ביתי')){
+    const i=state.findIndex(c=>c.name==='בלתי צפוי');
+    const g=gymChapter(); (i>-1)?state.splice(i,0,g):state.push(g);
+  }
+  try{localStorage.setItem('marzouk_budget_v','2');}catch(e){}
+})();
+const tree=$('budgetTree');
+
+function rowHTML(r,ci,si,ri,sel){
+  const fileBlk = r.file
+    ? `<div class="file-btn has" title="להחלפה — מחקו והעלו מחדש"><span class="fn">${esc(r.file.name)}</span></div>
+       <button class="icon-btn" data-act="delFile" title="מחיקת קובץ">${TRASH}</button>`
+    : `<label class="file-btn"><input type="file" data-act="file" hidden><span>הצעת מחיר</span></label>`;
+  return `<div class="qrow" data-ci="${ci}" data-si="${si}" data-ri="${ri}">
+    <button class="pick${sel===ri?' on':''}" data-act="pick" title="בחירת הצעה"></button>
+    <input class="in" data-act="supplier" placeholder="שם ספק" value="${esc(r.supplier)}">
+    <input class="in cost" data-act="cost" inputmode="numeric" placeholder="עלות ₪" value="${esc(r.cost)}">
+    <div class="rowtools">${fileBlk}
+      <button class="icon-btn" data-act="delRow" title="מחיקת שורה">${TRASH}</button>
+    </div></div>`;
+}
+function subHTML(s,ci,si){
+  return `<div class="sub" data-ci="${ci}" data-si="${si}">
+    <div class="sub-head">
+      <span class="sub-dot"></span>
+      <input class="sub-name" data-act="subName" value="${esc(s.name)}" aria-label="שם פרק משנה">
+      <span class="sub-sum" data-ci="${ci}" data-si="${si}">—</span>
+      <button class="linkbtn" data-act="addRow">+ שורה</button>
+      <button class="icon-btn" data-act="delSub" title="מחיקת פרק משנה">${TRASH}</button>
+    </div>
+    ${s.rows.map((r,ri)=>rowHTML(r,ci,si,ri,s.sel)).join('')}
+  </div>`;
+}
+function render(){
+  tree.innerHTML=state.map((c,ci)=>`
+    <div class="chap${c.open?' open':''}" data-ci="${ci}">
+      <div class="chap-head">
+        <span class="tri"></span>
+        <input class="chap-name" data-act="chapName" value="${esc(c.name)}" aria-label="שם פרק ראשי">
+        <span class="chap-sum" data-ci="${ci}">₪0</span>
+        <button class="icon-btn" data-act="delChap" title="מחיקת פרק">${TRASH}</button>
+      </div>
+      <div class="chap-body">
+        ${c.subs.map((s,si)=>subHTML(s,ci,si)).join('')}
+        <div class="sub-foot"><button class="linkbtn" data-act="addSub">+ הוספת פרק משנה</button></div>
+      </div>
+    </div>`).join('');
+  recompute();
+}
+function recompute(){
+  let total=0,quotes=0,subs=0,priced=0;
+  state.forEach((c,ci)=>{
+    let cs=0;
+    c.subs.forEach((s,si)=>{
+      subs++;
+      s.rows.forEach(r=>{ if(r.file)quotes++; });
+      let scost=(s.sel>-1&&s.rows[s.sel])?num(s.rows[s.sel].cost):0;
+      if(scost>0)priced++;
+      cs+=scost;
+      const se=document.querySelector(`.sub-sum[data-ci="${ci}"][data-si="${si}"]`);
+      if(se)se.textContent=scost>0?fmt(scost):'—';
+    });
+    const ce=document.querySelector(`.chap-sum[data-ci="${ci}"]`);
+    if(ce)ce.textContent=fmt(cs);
+    total+=cs;
+  });
+  const pct=subs?Math.round(priced/subs*100):0;
+  const setT=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+  const setB=(id,p)=>{const e=$(id);if(e)e.style.width=Math.min(100,p)+'%';};
+  setT('bTotal',fmt(total)); setT('bQuotes',quotes); setT('bSubs',subs);
+  setT('sTotal',fmt(total)); setT('sQuotes',quotes); setT('sPct',pct+'%');
+  setB('bBar',pct); setB('sBar',pct);
+  save();
+}
+
+/* clicks (structural) */
+tree.addEventListener('click',e=>{
+  const head=e.target.closest('.chap-head');
+  const actEl=e.target.closest('[data-act]');
+  const act=actEl?actEl.dataset.act:null;
+  const chap=e.target.closest('.chap'), sub=e.target.closest('.sub'), row=e.target.closest('.qrow');
+  const ci=chap?+chap.dataset.ci:-1, si=sub?+sub.dataset.si:-1, ri=row?+row.dataset.ri:-1;
+  // toggle open/close when clicking the header (but not the name field or a button)
+  if(head && !e.target.closest('.chap-name') && !e.target.closest('button')){
+    state[ci].open=!state[ci].open; render(); return;
+  }
+  if(!act) return;
+  if(act==='delChap'){ if(confirm('למחוק את הפרק כולו?')){state.splice(ci,1); render();} }
+  else if(act==='addSub'){ state[ci].subs.push(mkSub('פרק משנה חדש')); render(); }
+  else if(act==='delSub'){ if(confirm('למחוק פרק משנה זה?')){state[ci].subs.splice(si,1); render();} }
+  else if(act==='addRow'){ state[ci].subs[si].rows.push(mkRow()); render(); }
+  else if(act==='delRow'){ const s=state[ci].subs[si]; s.rows.splice(ri,1);
+    if(s.sel===ri)s.sel=-1; else if(s.sel>ri)s.sel--; render(); }
+  else if(act==='pick'){ const s=state[ci].subs[si]; s.sel=(s.sel===ri?-1:ri); render(); }
+  else if(act==='delFile'){ state[ci].subs[si].rows[ri].file=null; render(); }
+});
+/* file uploads */
+tree.addEventListener('change',e=>{
+  const inp=e.target.closest('[data-act="file"]'); if(!inp||!inp.files.length)return;
+  const row=e.target.closest('.qrow');
+  const ci=+row.closest('.chap').dataset.ci, si=+row.closest('.sub').dataset.si, ri=+row.dataset.ri;
+  state[ci].subs[si].rows[ri].file={name:inp.files[0].name}; render();
+});
+/* text/number editing (no re-render, keeps focus) */
+tree.addEventListener('input',e=>{
+  const el=e.target.closest('[data-act]'); if(!el)return;
+  const act=el.dataset.act;
+  const chap=e.target.closest('.chap'), sub=e.target.closest('.sub'), row=e.target.closest('.qrow');
+  const ci=chap?+chap.dataset.ci:-1, si=sub?+sub.dataset.si:-1, ri=row?+row.dataset.ri:-1;
+  if(act==='chapName'){ state[ci].name=el.value; save(); }
+  else if(act==='subName'){ state[ci].subs[si].name=el.value; save(); }
+  else if(act==='supplier'){ state[ci].subs[si].rows[ri].supplier=el.value; save(); }
+  else if(act==='cost'){ state[ci].subs[si].rows[ri].cost=el.value; recompute(); }
+});
+$('addChap').addEventListener('click',()=>{
+  state.push({name:'פרק ראשי חדש',open:true,subs:[mkSub('פרק משנה חדש')]});
+  render(); tree.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+});
+
+render();
+
+/* ====================== PLANS + CLIENT NOTES ====================== */
+const PLANS=[
+  {f:'000',name:'מפה מיצבית',drive:'160uXUVqXYy1gfXPL05z-UkzjacyWfA2R'},
+  {f:'001',name:'גרסה א׳ — תוכניות קומה'},
+  {f:'002',name:'גרסה ב׳ — תוכניות קומה'},
+  {f:'003',name:'גרסה ג׳ — תוכניות קומה',drive:'1wnNeV53wlKY5LNfw-8SAfZJIOjSqmsp5'},
+  {f:'004',name:'גרסה סופית — תוכניות קומה',drive:'1GJjrdwrxvQC9zgyQaLfShU56PgnANZ47',signable:true},
+  {f:'005',name:'חישוב שטחים רובוטי'},
+  {f:'006',name:'גרמושקה מלאה',signable:true},
+  {f:'007',name:'סט תוכניות עבודה'}
+];
+function loadChat(){ try{const s=localStorage.getItem('amireden_chat'); if(s)return JSON.parse(s);}catch(e){} return {}; }
+function saveChat(){ try{localStorage.setItem('amireden_chat',JSON.stringify(chat));}catch(e){} }
+let chat=loadChat();
+const plist=$('plansList');
+const SEND='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg>';
+function authorName(who){ return ({amir:'אמיר',eden:'עדן',wael:'וואיל',architect:'אהרון · אדריכל'})[who]||'אורח'; }
+function nowStamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0');
+  return p(d.getDate())+'.'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+
+function chatHTML(f){
+  const arr=chat[f]||[];
+  if(!arr.length) return `<div class="chat-empty">אין עדיין הערות. כתבו את הראשונה.</div>`;
+  return arr.map((m,i)=>{
+    const me=m.who===userId;
+    const del=(me||userId==='architect')?`<button class="msg-x" data-act="delMsg" data-f="${f}" data-i="${i}" title="מחיקה">${TRASH}</button>`:'';
+    return `<div class="msg ${me?'me':'them'}"><div class="bub">
+      <div class="bub-top"><span class="bub-name">${esc(m.name)}</span>${del}</div>
+      <div class="bub-text">${esc(m.text)}</div>
+      <div class="bub-time">${esc(m.time)}</div>
+    </div></div>`;
+  }).join('');
+}
+function renderChat(f){ const el=document.getElementById('chat-'+f); if(el){ el.innerHTML=chatHTML(f); el.scrollTop=el.scrollHeight; } }
+function sendChat(f,el){
+  const t=(el.value||'').trim(); if(!t)return;
+  (chat[f]=chat[f]||[]).push({who:userId,name:authorName(userId),text:t,time:nowStamp()});
+  saveChat(); el.value=''; renderChat(f);
+}
+
+function renderPlans(){
+  plist.innerHTML=PLANS.map(p=>`
+    <div class="plancard">
+      <div class="pc-head">
+        <span class="fbadge">${p.f}</span>
+        <span class="pc-title">${esc(p.name)}</span>
+        <span class="pc-file">AMIREDEN${p.f}</span>
+        ${p.drive
+          ? `<span class="pc-src">Google Drive</span>`
+          : `<button class="up-btn" data-act="upload" data-f="${p.f}">העלאת קובץ</button>
+             <input type="file" id="upin-${p.f}" class="up-input" data-f="${p.f}" accept="image/*,application/pdf" hidden>`}
+      </div>
+      <div class="pc-frame" id="frame-${p.f}">
+        <div class="ph"><div class="sq"></div><small>טרם הועלתה תוכנית</small></div>
+      </div>
+      ${p.signable?`<div class="sign-bar" id="sign-${p.f}"></div>`:''}
+      <div class="chat">
+        <h5>הערות הלקוחות</h5>
+        <div class="chat-thread" id="chat-${p.f}"></div>
+        <div class="chat-input">
+          <input class="chat-text" data-f="${p.f}" placeholder="כתבו הערה..." maxlength="500">
+          <button class="chat-send" data-act="send" data-f="${p.f}" aria-label="שליחה">${SEND}</button>
+        </div>
+      </div>
+    </div>`).join('');
+  PLANS.forEach(p=>{ renderChat(p.f); restore(p.f); if(p.signable) renderSign(p.f); });
+}
+
+/* ---- file storage in IndexedDB so plans survive refresh ---- */
+const PDB='amireden_plans', PSTORE='files';
+function pdb(){ return new Promise((res,rej)=>{ let r; try{r=indexedDB.open(PDB,1);}catch(e){return rej(e);}
+  r.onupgradeneeded=()=>{ try{r.result.createObjectStore(PSTORE,{keyPath:'f'});}catch(e){} };
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+function pdbPut(rec){ return pdb().then(db=>new Promise((res,rej)=>{ const t=db.transaction(PSTORE,'readwrite');
+  t.objectStore(PSTORE).put(rec); t.oncomplete=()=>res(); t.onerror=()=>rej(t.error); })); }
+function pdbGet(f){ return pdb().then(db=>new Promise((res,rej)=>{ const t=db.transaction(PSTORE,'readonly');
+  const q=t.objectStore(PSTORE).get(f); q.onsuccess=()=>res(q.result||null); q.onerror=()=>rej(q.error); })); }
+function pdbDel(f){ return pdb().then(db=>new Promise((res,rej)=>{ const t=db.transaction(PSTORE,'readwrite');
+  t.objectStore(PSTORE).delete(f); t.oncomplete=()=>res(); t.onerror=()=>rej(t.error); })); }
+
+function showFile(f,blob,name){
+  const fr=document.getElementById('frame-'+f); if(!fr)return;
+  const url=URL.createObjectURL(blob);
+  const isPdf=(blob.type==='application/pdf')||/\.pdf$/i.test(name||'');
+  fr.dataset.user='1';
+  fr.innerHTML=(isPdf?`<iframe src="${url}"></iframe>`:`<img src="${url}" alt="">`)
+    +`<button class="frame-x" data-act="rmFile" data-f="${f}" title="הסרת קובץ">${TRASH}</button>`;
+}
+function clearFrame(f){
+  const fr=document.getElementById('frame-'+f); if(!fr)return;
+  delete fr.dataset.user;
+  fr.innerHTML=`<div class="ph"><div class="sq"></div><small>טרם הועלתה תוכנית</small></div>`;
+}
+function showDrive(f,id){
+  const fr=document.getElementById('frame-'+f); if(!fr)return;
+  fr.dataset.user='1';
+  fr.innerHTML=`<iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay" allowfullscreen></iframe>`;
+}
+function restore(f){
+  const p=PLANS.find(x=>x.f===f);
+  if(p&&p.drive){ showDrive(f,p.drive); return; }
+  pdbGet(f).then(rec=>{ if(rec&&rec.blob){ showFile(f,rec.blob,rec.name); } else { autoload(f); } })
+           .catch(()=>autoload(f));
+}
+function autoload(f){
+  const exts=['jpg','png','jpeg','webp'];
+  const bases=['AMIREDEN'+f, f+'/AMIREDEN'+f, 'plans/'+f+'/AMIREDEN'+f];
+  const cands=[]; bases.forEach(b=>exts.forEach(e=>cands.push(b+'.'+e)));
+  let i=0; (function next(){
+    if(i>=cands.length)return;
+    const fr=document.getElementById('frame-'+f); if(fr&&fr.dataset.user)return;
+    const im=new Image();
+    im.onload=()=>{ const fr2=document.getElementById('frame-'+f); if(fr2&&!fr2.dataset.user) fr2.innerHTML=`<img src="${cands[i]}" alt="">`; };
+    im.onerror=()=>{ i++; next(); };
+    im.src=cands[i];
+  })();
+}
+
+plist.addEventListener('keydown',e=>{
+  const ti=e.target.closest('.chat-text'); if(!ti)return;
+  if(e.key==='Enter'){ e.preventDefault(); sendChat(ti.dataset.f,ti); }
+});
+plist.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b)return;
+  const f=b.dataset.f, act=b.dataset.act;
+  if(act==='send'){ const ti=document.querySelector('.chat-text[data-f="'+f+'"]'); if(ti)sendChat(f,ti); }
+  else if(act==='delMsg'){ const i=+b.dataset.i; if(chat[f]){ chat[f].splice(i,1); saveChat(); renderChat(f); } }
+  else if(act==='rmFile'){ clearFrame(f); pdbDel(f).catch(()=>{}); }
+  else if(act==='upload'){
+    if(role!=='architect'){ alert('פעולה זו מוגדרת עבור האדריכל בלבד.'); return; }
+    const inp=document.getElementById('upin-'+f); if(inp)inp.click();
+  }
+  else if(act==='sign'){
+    const who=b.dataset.who;
+    if(signs[f]&&signs[f][who])return;
+    const nm=(NAMEOF[who]||who).split(' ')[0];
+    if(userId!==who){ alert('כפתור החתימה מיועד ל'+nm+'. כדי לחתום, היכנסו עם מספר הטלפון של '+nm+'.'); return; }
+    openSign(f,who);
+  }
+});
+plist.addEventListener('change',e=>{
+  const inp=e.target.closest('.up-input'); if(!inp||!inp.files.length)return;
+  if(role!=='architect'){ inp.value=''; return; }
+  const f=inp.dataset.f, file=inp.files[0];
+  showFile(f,file,file.name);
+  pdbPut({f,blob:file,name:file.name,type:file.type}).catch(()=>{});
+  inp.value='';
+});
+
+/* ====================== CLIENT SIGNING ====================== */
+const NAMEOF={amir:'אמיר מרזוק', eden:'עדן טריף'};
+const EMAILS={architect:'aharonarchitecture@gmail.com', amir:'marzok@technion.ac.il', eden:'eden.t115@gmail.com'};
+function planName(f){ const p=PLANS.find(x=>x.f===f); return p?p.name:f; }
+function loadSigns(){ try{const s=localStorage.getItem('amireden_signs'); if(s)return JSON.parse(s);}catch(e){} return {}; }
+function saveSigns(){ try{localStorage.setItem('amireden_signs',JSON.stringify(signs));}catch(e){} }
+(function resetSignsOnce(){ try{
+  if(localStorage.getItem('amireden_signs_reset')!=='1'){
+    localStorage.removeItem('amireden_signs');
+    localStorage.setItem('amireden_signs_reset','1');
+  }
+}catch(e){} })();
+let signs=loadSigns();
+
+function renderSign(f){
+  const el=document.getElementById('sign-'+f); if(!el)return;
+  const s=signs[f]||{};
+  const cell=(who)=> s[who]
+    ? `<span class="sign-done">נחתם · ${NAMEOF[who].split(' ')[0]} · ${(s[who].date||'').split(',')[0]}</span>`
+    : `<button class="sign-btn ${who==='eden'?'eden':''}" data-act="sign" data-f="${f}" data-who="${who}">חתימת ${NAMEOF[who].split(' ')[0]}</button>`;
+  const both=s.amir&&s.eden;
+  el.innerHTML=`<span class="sb-title">אישור וחתימת התוכניות</span>${cell('amir')}${cell('eden')}`
+    +(both?`<span class="sign-ok-note">התקבלו שתי החתימות — ניתן להתקדם לשלב הבא.</span>`:'');
+}
+
+const signModal=$('signModal'), sigpad=$('sigpad'), pctx=sigpad.getContext('2d');
+let curF='', curWho='', hasInk=false, drawing=false, lastCert='', lastCertCanvas=null;
+function openSign(f,who){
+  curF=f; curWho=who; hasInk=false;
+  $('signForm').style.display='block'; $('signDone').style.display='none';
+  $('signWho').textContent='חותם/ת: '+NAMEOF[who];
+  $('signLegal').textContent='בחתימה למטה אני מאשר/ת כי עיינתי בתוכניות «'+planName(f)+'» עבור הבית של אמיר ועדן בג׳וליס, הבנתי את תכולתן, וכי הן משקפות את רצוננו. אישור זה מהווה הסכמה להמשך התכנון והביצוע על בסיס תוכניות אלו.';
+  $('chk1').checked=false; $('chk2').checked=false;
+  signModal.classList.add('on');
+  requestAnimationFrame(()=>{ padResize(); clearPad(); updateSubmit(); });
+}
+function padResize(){ const r=sigpad.getBoundingClientRect(); const dpr=window.devicePixelRatio||1;
+  sigpad.width=Math.round(r.width*dpr); sigpad.height=Math.round(r.height*dpr);
+  pctx.setTransform(dpr,0,0,dpr,0,0); pctx.lineWidth=2.4; pctx.lineCap='round'; pctx.lineJoin='round'; pctx.strokeStyle='#10100f'; }
+function clearPad(){ pctx.save(); pctx.setTransform(1,0,0,1,0,0); pctx.clearRect(0,0,sigpad.width,sigpad.height); pctx.restore(); hasInk=false; }
+function ptOf(e){ const r=sigpad.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+sigpad.addEventListener('pointerdown',e=>{ drawing=true; hasInk=true; const p=ptOf(e); pctx.beginPath(); pctx.moveTo(p.x,p.y); try{sigpad.setPointerCapture(e.pointerId);}catch(_){} updateSubmit(); });
+sigpad.addEventListener('pointermove',e=>{ if(!drawing)return; const p=ptOf(e); pctx.lineTo(p.x,p.y); pctx.stroke(); });
+sigpad.addEventListener('pointerup',()=>{drawing=false;});
+sigpad.addEventListener('pointerleave',()=>{drawing=false;});
+$('sigClear').addEventListener('click',()=>{ clearPad(); updateSubmit(); });
+function updateSubmit(){ $('signSubmit').disabled=!($('chk1').checked&&$('chk2').checked&&hasInk); }
+$('chk1').addEventListener('change',updateSubmit);
+$('chk2').addEventListener('change',updateSubmit);
+$('signCancel').addEventListener('click',()=>signModal.classList.remove('on'));
+$('doneClose').addEventListener('click',()=>signModal.classList.remove('on'));
+signModal.addEventListener('click',e=>{ if(e.target===signModal)signModal.classList.remove('on'); });
+
+$('signSubmit').addEventListener('click',()=>{
+  if($('signSubmit').disabled)return;
+  const date=new Date().toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const sc=document.createElement('canvas'); sc.width=360; sc.height=Math.round(360*sigpad.height/sigpad.width);
+  sc.getContext('2d').drawImage(sigpad,0,0,sc.width,sc.height);
+  const rec={name:NAMEOF[curWho],who:curWho,date,img:sc.toDataURL('image/png')};
+  signs[curF]=signs[curF]||{}; signs[curF][curWho]=rec; saveSigns(); renderSign(curF);
+  lastCert=makeCertificate(curF,curWho,rec,sigpad);
+  $('signForm').style.display='none'; $('signDone').style.display='block';
+  $('doneMsg').textContent='תודה, '+NAMEOF[curWho].split(' ')[0]+'. החתימה על «'+planName(curF)+'» נקלטה.';
+  const ms=$('mailStatus');
+  if(EMAILJS_ON){
+    $('mailNote').textContent='מסמך ה-PDF ירד למכשירכם לשמירה.';
+    ms.textContent='שולח מייל לכל הצדדים...';
+    sendApprovalEmail(curF,curWho,rec)
+      .then(res=>{ ms.textContent=(res&&res.noAttach)?'המייל נשלח (ה-PDF לא צורף — ראו הערה למטה).':'המייל נשלח אוטומטית לאהרון, אמיר ועדן, עם ה-PDF מצורף.'; })
+      .catch(()=>{ ms.textContent='שליחה אוטומטית נכשלה — נסו את כפתור המייל למטה.'; });
+  } else {
+    ms.textContent='';
+    $('mailNote').textContent='נפתחת טיוטת מייל ב-Gmail לכל הצדדים — צרפו אליה את קובץ ה-PDF שהורד.';
+  }
+});
+function buildAttachmentPdf(){
+  if(!(window.jspdf&&window.jspdf.jsPDF&&lastCertCanvas)) return null;
+  try{
+    const jpeg=lastCertCanvas.toDataURL('image/jpeg',0.7);
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'px',format:[900,1180],compress:true});
+    doc.addImage(jpeg,'JPEG',0,0,900,1180);
+    return doc.output('datauristring');
+  }catch(e){ return null; }
+}
+function sendApprovalEmail(f,who,rec){
+  if(!(EMAILJS_ON&&window.emailjs)) return Promise.reject('not-configured');
+  const base={
+    email:[EMAILS.architect,EMAILS.amir,EMAILS.eden].join(','),
+    name:rec.name.split(' ')[0],
+    signer_name:rec.name,
+    project:'הבית של אמיר ועדן · ג׳וליס',
+    plan_name:planName(f),
+    plan_code:'AMIREDEN'+f,
+    sign_date:rec.date,
+    decl1:'קראתי ועברתי על התוכניות, והן הוסברו לי. אני מבין/ה את תכולתן.',
+    decl2:'אני מאשר/ת את התוכניות כפי שהוצגו, ומסכים/ה להתקדמות הפרויקט לשלב הבא על בסיסן.'
+  };
+  const pdf=buildAttachmentPdf();
+  const sid=EMAILJS_CFG.serviceId, tid=EMAILJS_CFG.templateId;
+  const withAtt=pdf?Object.assign({content:pdf, filename:'approval-'+who+'-'+f+'.pdf'},base):base;
+  return emailjs.send(sid,tid,withAtt)
+    .then(r=>({noAttach:false}))
+    .catch(()=> emailjs.send(sid,tid,base).then(r=>({noAttach:!!pdf})) );
+}
+$('dlBtn').addEventListener('click',()=>{ if(!lastCert)return; downloadCert(); });
+function downloadCert(){
+  try{
+    if(window.jspdf&&window.jspdf.jsPDF){
+      const {jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:'portrait',unit:'px',format:[900,1180],compress:true});
+      doc.addImage(lastCert,'PNG',0,0,900,1180);
+      doc.save('אישור-תוכניות-'+curWho+'-'+curF+'.pdf');
+      return;
+    }
+  }catch(e){}
+  const a=document.createElement('a'); a.href=lastCert;
+  a.download='אישור-תוכניות-'+curWho+'-'+curF+'.png';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+$('mailBtn').addEventListener('click',()=>{
+  if(EMAILJS_ON){
+    const ms=$('mailStatus'); ms.textContent='שולח...';
+    sendApprovalEmail(curF,curWho,signs[curF][curWho])
+      .then(res=>{ ms.textContent=(res&&res.noAttach)?'נשלח שוב (ללא צירוף PDF).':'נשלח שוב לכל הצדדים, עם ה-PDF מצורף.'; })
+      .catch(()=>{ ms.textContent='השליחה נכשלה — בדקו את הגדרות EmailJS.'; });
+    return;
+  }
+  const to=[EMAILS.architect,EMAILS.amir,EMAILS.eden].join(',');
+  const sub='אישור תוכניות — '+planName(curF)+' — '+NAMEOF[curWho];
+  const body='שלום,\n\n'+NAMEOF[curWho]+' אישר/ה וחתם/ה על התוכניות «'+planName(curF)+'» (AMIREDEN'+curF+') עבור הבית של אמיר ועדן בג׳וליס.\n\nהצהרות שאושרו:\n1) עיון והבנה של התוכניות.\n2) אישור התוכניות והסכמה להתקדמות הפרויקט לשלב הבא.\n\nמועד החתימה: '+(signs[curF][curWho].date)+'\n\nנא לצרף את מסמך האישור החתום (PDF) שהורד.\n\nלוי אדריכלים';
+  const gmail='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body);
+  const w=window.open(gmail,'_blank');
+  if(!w){ window.location.href='mailto:'+to+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body); }
+});
+if(EMAILJS_ON){ const mb=$('mailBtn'); if(mb)mb.textContent='שליחה חוזרת במייל'; }
+
+function roundRect(x,xx,yy,w,h,r){ x.beginPath(); x.moveTo(xx+r,yy); x.arcTo(xx+w,yy,xx+w,yy+h,r);
+  x.arcTo(xx+w,yy+h,xx,yy+h,r); x.arcTo(xx,yy+h,xx,yy,r); x.arcTo(xx,yy,xx+w,yy,r); x.closePath(); }
+function wrapText(x,text,xRight,y,maxW,lh){ const w=text.split(' '); let line='',yy=y;
+  for(let i=0;i<w.length;i++){ const t=line?line+' '+w[i]:w[i];
+    if(x.measureText(t).width>maxW&&line){ x.fillText(line,xRight,yy); line=w[i]; yy+=lh; } else line=t; }
+  if(line)x.fillText(line,xRight,yy); return yy; }
+function declaration(x,R,M,y,text){
+  const s=18; x.fillStyle='#FF5A2C'; roundRect(x,R-s,y-14,s,s,5); x.fill();
+  x.strokeStyle='#fff'; x.lineWidth=2.4; x.lineCap='round'; x.beginPath();
+  x.moveTo(R-13.5,y-5); x.lineTo(R-10,y-1.5); x.lineTo(R-4,y-10); x.stroke();
+  x.fillStyle='#222'; x.font='400 16px Heebo,Arial'; x.textAlign='right';
+  return wrapText(x,text,R-s-12,y,R-M-s-12,25)+16;
+}
+function drawStar(x,cx,cy,r,color,alpha){
+  x.save(); x.globalAlpha=(alpha==null?1:alpha); x.strokeStyle=color; x.lineWidth=Math.max(2,r*0.2); x.lineCap='round';
+  for(let i=0;i<3;i++){ const a=i*Math.PI/3;
+    x.beginPath(); x.moveTo(cx-Math.cos(a)*r,cy-Math.sin(a)*r); x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r); x.stroke(); }
+  x.restore();
+}
+function makeCertificate(f,who,rec,padCanvas){
+  const W=900,H=1180,c=document.createElement('canvas'); c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  x.fillStyle='#fff'; x.fillRect(0,0,W,H);
+  drawStar(x,W/2,690,240,'#FF5A2C',0.05);
+  x.fillStyle='#FF5A2C'; x.fillRect(0,0,W,12);
+  const M=70,R=W-M;
+  drawStar(x,M+34,86,36,'#FF5A2C',1);
+  x.direction='rtl'; x.textAlign='right';
+  x.fillStyle='#10100f'; x.font='800 36px Heebo,Arial'; x.fillText('אישור וחתימת תוכניות',R,96);
+  x.fillStyle='#FF5A2C'; x.font='700 18px Heebo,Arial'; x.fillText('לוי אדריכלים · פורטל לקוחות',R,128);
+  x.strokeStyle='#e7e7e2'; x.lineWidth=1; x.beginPath(); x.moveTo(M,150); x.lineTo(R,150); x.stroke();
+  let y=202;
+  const field=(label,val)=>{ x.textAlign='right'; x.fillStyle='#9a9a9a'; x.font='400 15px Heebo,Arial'; x.fillText(label,R,y);
+    x.fillStyle='#111'; x.font='700 21px Heebo,Arial'; x.fillText(val,R,y+28); y+=76; };
+  field('פרויקט','הבית של אמיר ועדן · ג׳וליס');
+  field('מסמך', planName(f)+'  ·  AMIREDEN'+f);
+  field('חותם/ת', rec.name);
+  field('מועד החתימה', rec.date);
+  x.fillStyle='#9a9a9a'; x.font='400 15px Heebo,Arial'; x.textAlign='right'; x.fillText('הצהרות שאושרו',R,y); y+=32;
+  y=declaration(x,R,M,y,'קראתי ועברתי על התוכניות, והן הוסברו לי. אני מבין/ה את תכולתן ואת משמעותן.');
+  y=declaration(x,R,M,y,'אני מאשר/ת את התוכניות כפי שהוצגו, ומסכים/ה להתקדמות הפרויקט לשלב הבא על בסיסן.');
+  y+=8;
+  x.fillStyle='#9a9a9a'; x.font='400 15px Heebo,Arial'; x.textAlign='right'; x.fillText('חתימה',R,y); y+=12;
+  const bw=R-M, bh=160; x.strokeStyle='#e7e7e2'; x.lineWidth=1; x.strokeRect(M,y,bw,bh);
+  const pr=padCanvas.width/padCanvas.height; let dw=bw-24, dh=dw/pr; if(dh>bh-20){dh=bh-20; dw=dh*pr;}
+  x.drawImage(padCanvas, M+(bw-dw)/2, y+(bh-dh)/2, dw, dh);
+  y+=bh+34;
+  x.fillStyle='#9a9a9a'; x.font='400 13px Heebo,Arial'; x.textAlign='right';
+  x.fillText('מסמך זה הופק אוטומטית בעת החתימה בפורטל הלקוחות של לוי אדריכלים.',R,y);
+  lastCertCanvas=c;
+  return c.toDataURL('image/png');
+}
+
+renderPlans();
+
+/* ====================== MEETINGS ====================== */
+const MEETINGS=[
+  {id:157447208, url:'https://fathom.video/share/n1ZaEUyiBSJyJ8sjHKcRzyzCHdDu2ZSd', title:'תכנון חדר הכושר · ניב (IRON)', date:'23.06.2026', summary:"מטרת הפגישה: גיבוש רשימת ציוד סופית לחדר הכושר הביתי, לקראת התכנון האדריכלי והגשת הבקשה להיתר.\n\nעיקרי הדברים:\n\n• מתקן מרכזי — \"Warlord All-in-One\": מולטי-טריינר שמשלב כלוב סקוואט, קרוסאובר, סמית' משין ומוט מתח, כדי לחסוך מקום. מידות: רוחב 1.32 מ׳, עומק 96 ס״מ. ממוקם במרכז קיר הממ״ד, כמוקד החדר.\n\n• ריצוף: אריחי גומי פוליאוריטן בעובי 2 ס״מ, מונחים ישירות על בטון מפולס — ללא פורצלן מתחת. עדיף על גומי מגורן (קל יותר לתחזוקה, נראה טוב יותר). מותקן עם קליפסים במרווח אפס.\n\n• גובה תקרה: הועלה ל-2.80 מ׳ (מ-2.60) כדי לאפשר תנועות מעל הראש בבטחה ולהכיל את המתקן.\n\n• ספסלים: ספסלים מתכווננים מסוג \"Beast\". בהמשך הוחלט להוריד ספסל אחד ולהוסיף ספסל פריצ'ר קרל (1.07×0.70 מ׳) — אהרון ימדל אותו בתלת-ממד לבדיקת צפיפות.\n\n• קרדיו: הליכון מכני \"Sprinter\" (לא חשמלי) ואופני אוויר \"Airbike\".\n\n• מכונת בידוד: \"Cable Fly\" (פרפר) — נבחרה בזכות תנועה חלקה ותפיסת מקום קטנה.\n\n• מוטות: ארבעה — אולימפי (20 ק״ג), W (EZ), טראפ פתוח, ומוט טכניקה קצר (15 ק״ג). אחסון על מתלה בקיר הממ״ד.\n\n• משקולות: דמבלים בציפוי פוליאוריטן (נראות ובטיחות), על שני מעמדי רצפה משני צידי המתקן המרכזי.\n\n• אזור חוץ: מתקן קליסטניקס/מקבילים מגולוון ועמיד למזג אוויר, משולב בריצוף החוץ (הפלטות מוסתרות מתחת לריצוף). בנוסף שק כבד (~60 ק״ג) וכדור מהירות על מסילת תקרה נעה (אהרון יבדוק מסילה אצל המסגר). כלוב חוץ נוסף (₪7,349, מגולוון, מיוצר בישראל) נשקל אך הוצא מההצעה.\n\nצעדים הבאים:\n• ניב — ישלח הצעת מחיר רשמית; יבדוק מסילת תקרה לשק ולכדור המהירות.\n• אהרון — ימדל את החדר בתלת-ממד לאישור החלל והזרימה (במיוחד עבור ספסל הפריצ'ר).", transcript:"ניב: מה מצב?\nאהרון: איי, מה קורה?\nניב: מעולה, יופי, סוף סוף. אני רושם לי פה Aharon Levy, נכון? אבל למעשה את התכנון הזה אנחנו עושים עבור מי? מי הלקוח שלך?\nאהרון: פרופ' אמיר מרזוק.\nניב: פרופ' אמיר מרזוק, אוקיי, רשמתי.\nאהרון: אני רוצה להתייחס לכמה פרמטרים, אני משתף את התוכניות.\nניב: אחלה.\nאהרון: אז כמה דברים שהייתי רוצה — אני אגיד לך מה אני רוצה לצאת איתו מהפגישה. אנחנו שנייה לפני הגשת בקשה להיתר. זו פעם ראשונה שאני מתכנן חדר כושר בתוך בית, ואני רוצה לעשות את הדברים בצורה מדויקת. אני רוצה להגיע למצב שאני יודע — לא מעריך ולא מנחש — אילו רכיבים נכנסים לפה. שאני יודע לשדר את זה לרקאד, אם צריך למשל להגדיל את החדר בכמה סנטימטרים, או להקטין אותו ב-30 ס״מ, ושזה לא ישפיע. להיות יותר מדויק בהגשת הבקשה.\nניב: הבנתי.\nאהרון: זה הידע שאני רוצה לצאת איתו. מבחינתי צריכה להיות רשימת מוצרים של איירון, שאני יודע שבסופו של דבר משתלבת היטב בתוך האדריכלות, ושללקוח יהיו השמות האלה, ובעוד חצי שנה הוא ייגש אליכם. עכשיו, המשתמשים בחדר הזה — אני מניח שימוש פחות כבד. אין חדר כושר ביישוב, אז מן הסתם החדר ישמש לא רק אותם אלא גם את החברים הקרובים. נגיד שלוש שעות שימוש אינטנסיבי ביום, זה המקסימום. הם צעירים, וההרגלים שלהם בעוד שני עשורים כנראה ישתנו, והייתי רוצה לתת להם מכשירים ורסטיליים. החלל שאני מתכנן מורכב משני חלקים — חלק פנימי וחלק חיצוני. תתעלם מהחפיפה של הבריכה עם החלק הזה, כי הבריכה זזה, לא תהיה חפיפה.\nניב: וואו, תקשיב, אתה קצת מקוטע. יכול להיות שהאינטרנט שלך בעייתי? עד עכשיו שמעתי אותך בסדר, רק רוצה לייצב את זה לפני שנמשיך.\nאהרון: תעצור אותי מיד כשאתה לא שומע אותי טוב. הסטינג של הזום שלי הוא הטופ של הטופ, אז אם הוא לא עובד אני יכול לסדר.\nניב: זה אמור להיות פרפקט. יש קצת קטיעות בדרך, אבל אני מבין את המילים בסוף. אז טוב, אני רואה מה שתיארת — יש לנו שטח בחוץ שפחות מוגדר לכושר, והחדר בפנים מוגדר לכושר. לגבי הציוד שאמרת שישתנה כי רמת הכושר שלהם תשתנה — זה פחות משנה איזו רמת כושר נוכחית. מלבד ציוד הקצה, המתקנים יכולים להישאר אותם מתקנים לאורך שנים. אפשר תמיד להזמין בהמשך משקלים נוספים אם הם מתקדמים. אני רואה שטח של 290 על 383.\nאהרון: כן.\nניב: עריחי גומי המיועדים לכושר — הבלאי שלהם בכיוון הזה, אבל בבית פחות יש בלאי. בחדרי כושר מחליפים אחת לחמש שנים בערך, אז בבית אפשר להגיע להרבה יותר, אם מתחזקים ולא מנקים עם חומצות שהורסות.\nאהרון: זה לא משהו שאני מוריש לנכדים שלי. פלטה של 20 קילו זה לא לנצח.\nניב: לפלטות אין בלאי מסוים. ספציפית פלטות — אני יכול להביא לך פלטת מתכת שתישאר 15 שנים במצב נהדר בתנאי בית. אבל ללקוח הזה אני חושב שפחות מתאים. אני אישית מעדיף צלחות מתכת, אבל הלקוח הזה ירצה משהו שנראה יותר נחמד. פלטות גומי גם יותר נוחות לאימון, יש להן ידיות. זה תלוי בהעדפות.\nאהרון: תעצור רגע. דיברת על העריחים — בוא נדבר על זה, כי זה משפיע על האדריכלות. אני רוצה להבין מה קורה בין העריח לריצוף, איזה ניתוק יש שם, אילו אופציות.\nניב: הסטנדרט שאנחנו מציעים הוא שני סנטימטרים, ואני לא ממליץ יותר מזה. עריחים מגורנים נוראים לטיפול — מתמלאים באבק, לא נוחים לניקיון, נראים פחות טוב לאורך זמן, והריח שלהם עוצמתי. עריחי גומי עם אלמנציית פוליאוריטן זה מה שאנחנו ממליצים. אפשר להזמין בצבע מותאם אישית, ייבוא מיוחד לפרויקט — קטגוריה של התאמה אישית, גם בצבעים של המתקנים, חוויה כללית יפה. הסטנדרט הוא שני סנטימטרים, וזה מספיק לכל הצרכים.\nאהרון: מתאים גם לקרוספיט, לזריקת משקולות? הייתי בטוח שקרוספיט זה 5 ס״מ.\nניב: מאוד מתאים. רק לא הייתי שם אותם על קרמיקה קיימת — צריך להניח אותם על בטון מפולס, ואתה מסודר.\nאהרון: הבנתי, מתחת לעריח לא יכול להיות ריצוף פורצלן?\nניב: לא מומלץ. אם תניח 200 קילו בשטח מאוד קטן ייתכן סדק. במקרה שלך, שאפשר לתכנן מההתחלה, לא הייתי עושה קרמיקה בכלל בחדר הזה — פשוט מניח את אריחי הגומי ישירות על הבטון. מתקינים עם קליפסים, מרווח אפס בין האריחים. אפשר גם להניח מעל שיפ אלומיניום אם רוצים — לא חובה, אבל זה מוסיף אסתטית. אני אשלח לך פינה עם שיפים שתראה איך זה נראה, אולי תשנה דעתך.\nאהרון: אוקיי. שאלה אחרונה על עריחים — אם ארצה לגלוש איתם החוצה, להובי החיצוני, הם מתאימים לשימוש חוץ?\nניב: לשימוש חוץ הם פחות מתאימים. הפוליאוריטן מיועד לפנים בלבד. לחוץ אנחנו שמים מגורן, ואז כדאי לעשות הבדלה ברורה בין השניים. מתקני כושר ביתיים זה אופי מסוים, יותר מוגן ומזוג. אם רוצים מתחם חוץ — הייתי ממליץ מתחם קליסטניקס מגולוון, עמיד בגשם ובאבק, עם תוספות כמו מקבילים. את ציוד הקצה חייבים לאחסן בפנים, הוא עלול להעלות חלודה. אפשר תמיד לצאת עם ספסל החוצה, לעבוד עם דמבלים, ובסוף להחזיר פנימה.\nאהרון: אצלי בחדר הכושר יש הרבה ספסלים של משקולות חופשיות, וזה עובד נפלא. כל הציוד אצלנו טכנוג'ים, לספסלים יש שני גלגלים מקדימה שלא נוגעים ברצפה כשהספסל מונח.\nניב: נכון, אפשר להזיז אותו.\nאהרון: יש ידית הרמה, אנשים מזיזים את הספסלים במהלך היום. בוא נדבר על תוכנית האימונים — לא כי זו התוכנית של הלקוח, אלא כי היא מאוד כוללת ויכולה לתת מענה להרבה תוכניות. הכלי הראשון שם זה Face Pull, אז צריך מכשיר כבלים.\nניב: Face Pull מבצעים על מתקן קרוסאובר או על פולי מתכוונן. בהחלט צריך קרוסאובר לתרגיל הזה.\nאהרון: יש מלא סוגים של מתקני כבלים, אבל אני מתחיל מהקצה — שאצא עם רשימת מלאי. בקצה יהיו לי חמישה פריטים: הקשיח, הישר, הכבל. נקרא לזה ציוד נייד, פחות רלוונטי לשיחת האדריכלות, אבל זה סעיף אחד.\nניב: אתה רוצה שאני אעבור תרגיל-תרגיל ואגיד אילו מתקנים צריך? אני עושה את התוכנית הזאת כל שבוע, אני יודע אילו מתקנים צריך.\nאהרון: אני מנסה להבין איך מכניסים את זה לקומפקט של חדר כושר ביתי, כי אם אפרוס את זה על פני כל המכשירים אני צריך מאה מטר רבוע.\nניב: יפה, האמת שלא. אתה יכול לדחוס את זה אפילו ב-20 מטר רבוע. המתקנים שלנו חסכניים במקום. בפתרון הפלטינום לחדרי כושר מוסדיים יש לכל מתקן ייעוד נפרד, אבל לבתים אנחנו מקבצים ארבעה מתקנים לכלוב אחד — קורה עוברת, כלוב, מוט מתח ותוספות — והופכים אותו למולטי-טריינר שנותן לבן אדם יחיד את כל העבודה. פחות מתאים לשני אנשים במקביל.\nאהרון: אני לא צריך שארבעה יעבדו במקביל, אבל שלפחות שניים יוכלו לעבוד יחד.\nניב: זה לגמרי אפשרי.\nאהרון: כששניים עובדים יחד זה נותן לי סיטואציה של ארבעה — שני זוגות, שזה הסיטואציה הקלאסית — הם וזוג נוסף שמתאמן איתם, כזה Set–Set. זאת השאיפה: גם פונקציונלי וגם מקום שמייצר אינטראקציות חברתיות. מקום חשוב שאתה נכנס אליו, פתוח לנוף, עם ויטרינות.\nניב: מאה אחוז. אני רואה שהגובה הוא 2.60 — יש אפשרות לגעת בזה? כי זה גבולי.\nאהרון: הגובה — בשביל זה אנחנו מדברים. כל גובה שתצטרך.\nניב: יופי, כי ההמלצה טיפה יותר.\nאהרון: אנחנו גם לא רוצים להשתגע עם הגובה. תגיד מה צריך וזה מה שנעשה.\nניב: כבר מ-2.70 ומעלה אנחנו בסדר גמור. אם אפשר להגדיר 2.80 — מושלם, הכי אידיאלי. 2.60 זה ממש מעט מתחת להמלצה, המינימום זה 2.65.\nאהרון: אתה מעדיף 2.80 או 2.90?\nניב: 2.80, זה מעל ומעבר.\nאהרון: אני מעדיף להיות בצד הבטוח. אם אתה אומר ש-2.80 סוגר את הפינה, אז נלך על זה.\nניב: סוגר במיליון אחוז. שלפתי לך את הכלוב המשולב ואת השיפ אלומיניום. הכלוב מציע קרוסאובר, סמית' משין, מוט מתח, ועבודה עם מוט חופשי באמצעות ג'ייקאפס שמחברים לקורה החיצונית. אפשר גם להציב מראה מאחוריו ולראות את עצמך בסקוואט או דדליפט. מתקן מושלם לשימוש ביתי, המוצר הכי פרימיומי שיש — אני מבין שהעניין הכלכלי פחות בעיה. יש אופציות זולות יותר, אבל הוא הכי יפה אסתטית והכי פונקציונלי, עם גלגלות אלומיניום במקום ניילון. הוא ה\"דבס\" בקטגוריית המולטי-טריינרים.\nאהרון: זה מרגיש מוצר מאוד מקצועי ממה שאני רואה.\nניב: הכי איכותי שיש לנו בקטגוריה, הרגשה טובה ומאוד יפה. אתם מוזמנים לבחון אותו פיזית אצלנו בחדרה, באזור התעשייה, רק לתאם יום ושעה.\nאהרון: מה השם של המוצר?\nניב: קלוב וורלורד — Warlord All-in-One. זה הדגם.\nאהרון: מדהים. וזה צריך איתו שני סוגי ספסלים, מתכוונן וקבוע?\nניב: לא, אני לא הייתי נצרך לזה. כדאי לחסוך במקום, והספסל המתכוונן נותן את המענה — שטוח, שיפוע שלילי, שיפוע חיובי, איך שתרצה. לדעתי לא ניקח את הספסל הקבוע.\nאהרון: עכשיו, הכלוב המשולב — אם אני מבין נכון מונח על הבטון ישירות, מעגנים אותו, והשטיחים נחתכים סביב הרגליים?\nניב: אתה יכול גם ככה, וגם מעל הריצוף גומי — זה יראה נהדר. אני אשלח תמונה של עבודה טרייה שעשינו: כלוב מעוגן שיושב ממש על העריח, בלי חיתוך, ונראה מצוין.\nאהרון: העריחים שהמלצת נראים ככה, עם הנקודות הלבנות?\nניב: בדיוק. מאוד קל לטיפול, לא רואים עליו לכלוך, נוח מאוד לחיות איתו.\nאהרון: זה הקיר שאפשר להחסין עליו את המוטות.\nניב: בתאבלס, כן.\nאהרון: הקיר שאנחנו יושבים עליו הוא קיר ממ״ד, אז אפשר לתלות עליו גם את המשקולות עצמן.\nניב: מאה אחוז, יש אפשרות כזו.\nאהרון: זה הקיר היחיד שאפשר לשים עליו מראה. עכשיו, אם אני מבין נכון, המכשיר הזה סוגר כ-50% מהתוכנית שלי. על אילו עוד מכשירים חשבת חוץ ממנו?\nניב: הסתכלתי על תוכנית האימון. מלבד הכלוב הפנימי יש כלוב לתנאי חוץ — המשחק המעניין בין פנים לחוץ — אבל הוא דורש הצעת מחיר מיוחדת כי הוא יקר, בדרך כלל למכינות קדם-צבאיות ולמוסדות. מיוצר בישראל. המחיר שלו 7,349 שקלים, לא כולל מע״מ.\nאהרון: דיברת על מחיר לפני שראיתי את המוצר.\nניב: כן, חיפשתי דקה את המחיר. זה הכלוב לתנאי חוץ, מאוד מרשים.\nאהרון: אם אני מבין נכון הוא מגולוון?\nניב: מגולוון, נכון. אתה בוחר את הצבע שלו, בהתאמה לריצוף ולאווירה בחוץ. מיועד לצביעה ולפרויקטים מיוחדים, וצריך חודשים מראש. אני מבין שאנחנו מדברים על משהו ראשוני?\nאהרון: לא, בערך תוך חודשים מתחילים לבנות.\nניב: וואו, אוקיי, אז סוגרים ציוד מעכשיו ומתחילים להזרים את הדברים המיוחדים.\nאהרון: יש לי פה מתח, יש לי אחסון משקולות — אפשר לעשות פה סקוואט?\nניב: אל תתייחס לאחסון המשקולות בחוץ — אנחנו לא מאחסנים משקולות בחוץ. כל המטלטלים שמורכבים על הכלוב, כולל זרועות ה-Spotter, צריך להכניס פנימה בסוף האימון.\nאהרון: הכלוב הזה לא מתאים לפרויקט. בוא נדבר על הליכון.\nניב: ההליכונים שלנו לא מתחברים לחשמל. אנחנו מציעים הליכון Sprinter — מיועד לאימונים עצימים ולשיפור ביצועים, אבל אפשר גם פשוט ללכת עליו, הרגשה טבעית יותר. הליכון מכני עם כימור, אפשר לעשות ספרינטים. יש לנו גם אופני אוויר — Airbike, מבוסס מאוורר, לא ספינינג רגיל, מיועד לאימונים עצימים.\nאהרון: משקולות, אופניים והליכון — סוגרים את כל החלל הפנימי או יש מקום למכונה נוספת? אני מתייחס לכלוב, אופניים, הליכון, קיר עם ספסל ודמבלים, וקיר עם המוטות.\nניב: בהחלט יש מקום למתקן נוסף. רק רגע, אני מסתכל על התוכנית.\nאהרון: בוא נהיה קונקרטיים עם מידות, זו המטרה של השיחה. אני מנסה להבין איפה ממקמים את הכלוב, ההליכון וכו', ותגיד לי אם אני בכיוון.\nניב: הקירות הם קירות בטון, נכון?\nאהרון: כן.\nניב: את הכלוב אני ממליץ למקם במרכז הקיר העליון. הרוחב שלו הוא 1.32 מ׳, יחסית צר. אם נציב עליו מוט אולימפי מדובר על 2.20 מ׳ סך הכל ברוחב שהוא תופס. בצדדים אפשר לשים שני מעמדי דמבל, באורך 1.09 מ׳.\nאהרון: מעמד דמבלים בצד?\nניב: כן, צמוד לקיר, בצידי הוורלורד. המעמד מינימום 1.09 מ׳ פלוס שני עמודים — יוצא 1.21 מ׳ ברוחב.\nאהרון: אוקיי.\nניב: זה המיקום המינימלי. אני אשלח לך איך נראית ההחסנה שלנו, תגיד אם אתה מתחבר.\nאהרון: משהו כזה? כלוב במרכז, הליכון, אופניים, אחסון משקולות.\nניב: מסלול נהדר. אני אישית הייתי מצמיד את ההליכון והאופניים יחד כדי לפנות חלל, ולעשות קטגוריות לחדר — אזור אירובי, אזור כלוב, אזור אחסון. אני אשלח לך גם את המעמד הרצפתי, מאוד יפה ועמיד, מדפי מתכת מלאים.\nאהרון: אם הכלוב כאן...\nניב: בראש שלי הכלוב צריך להיות מרכזי — זה מרכז האירוע, נראה מרשים וסימטרי מבחוץ. הוא גם תופס פחות עומק, רק 96 ס״מ.\nאהרון: וסביבו הליכון, אופניים — זה כל האירובי.\nניב: בדיוק. יש לך אחסון מצד אחד, אחסון מצד שני, כלוב במרכז.\nאהרון: ועמדות ההליכון. 383 ועוד 190, סך הכל 573, נגיד על 3.20.\nניב: בסדר. ההליכון מסתדר מול חלון יופי. תענוג שאתה עושה את הדימוי לתוכנית עצמה לפני שבונים.\nאהרון: מבחינת חלונות, נפתח חלונות. יש לי הליכון, אופניים, כלוב, ומקום למכונה נוספת.\nניב: יש לך מקום למכונה נוספת. אולי אפשר להזיז את הכלוב ימינה ולהקטין את המדף ל-1.50 מ׳, ובצד ימין להכניס מתקן נחמד לחזה — אולי Cable Fly, מתקן מאוד נחמד.\nאהרון: Cable Fly אני עושה על המשולב, לא?\nניב: אתה יכול, אבל יש גם מכשיר פרפר שהוא פשוט נהדר, ממליץ בחום. מתקן קטן בשטח, חלק ומאוד נעים.\nאהרון: ואז אני יכול לשבת גם הפוך, עם הפנים לכרית, לעבוד גב וחזה?\nניב: נכון. יש משחק עם מיקום הידיות, גב וחזה.\nאהרון: מה הרוחב שלו?\nניב: אשלח לך, אין לי כרגע את המידות עליו.\nאהרון: למה דווקא את המכשיר הזה בחרת מכל מכונות הבידוד?\nניב: כי הוא בין המוצרים הכי מוצלחים שלנו — חלק, נעים ברמה לא נורמלית, קטן בשטח, יפהפה. אם אני רוצה לתת ללקוח את הבסט שלנו — זה זה.\nאהרון: אני מסכם: הליכון, אופניים, המאוורר (Airbike) שאהבתי, הכלוב הראשי, ה-Cable Fly, דמבלים, קיר עם שלושה מוטות ארוכים, ומוט דדליפט מיוחד שמקיף את הגוף משני הכיוונים.\nניב: סוויסבר?\nאהרון: יוצא דדליפט והמוט מקיף אותי בשני הכיוונים.\nניב: אה, טראפ. אני אשלח לך את הטראפ שלנו — טראפ מיוחד, פתוח.\nאהרון: נכון, הוא מעולה, אין אותו בדרך כלל בחדרי כושר.\nניב: אתה מכיר את המוצר, יופי.\nאהרון: מבחינת דמבלים — תבחר אתה, כולם עטופים בגומי שמתאים לבית.\nניב: יש לי כל מיני. אני אנסה להבין את הגבולות התקציביים. אם אתה אומר לי צ'ק פתוח אני אעשה משהו מדהים. תתחיל מהטוב — הדמבל הכי יקר שלי בציפוי ניקל, מאוד יוקרתי, רמה גבוהה. יש גם פוליאוריטן שאיכותי באותה מידה אבל פחות יפה.\nאהרון: 20 קילו עולה 80 שקל? זה לא יקר.\nניב: התמונה להמחשה, אתה רואה כנראה 2.5 קילו. תסתכל על 20 קילו.\nאהרון: 640 שקל המשקולת, אוקיי.\nניב: נכון, לזוג.\nאהרון: בהקשר של הפרויקט הזה יש המון ערך לנראות, אבל הייתי רוצה גם חומרים שאם ילד נופל על האצבע יש מרווח ביטחון, והגומי לוקח קצת מזה.\nניב: הנזק יהיה דומה — זה גומי מלא, חומר קשה. אולי במצב סטטי להיתקע בגומי פחות נעים מאשר במתכת קרה. אבל ילדים לא מסוגלים להרים את המשקלים האלה. ומבחינת נראות — משקולות פוליאוריטן עגולות נראות מצוין, מתאימות לאווירה הבהירה אצלך, והריצוף משחק פה תפקיד.\nאהרון: הדרב בר נראה מעולה. יש לנו פגישה, אתה רוצה לחדד דברים, לשאול אותי שאלות כדי להכין את ההצעה?\nניב: כן. קודם כל — המתקנים ששמת שם בתוכנית הם סתם להמחשה, נכון? אין העדפה מסוימת מלבד מה שעברנו עליו?\nאהרון: אין שום משמעות, העובד שלי שם אותם. אני מנסה להבין מה יש פה.\nניב: אז אנחנו יורדים מהמתחם בחוץ, מכניסים הכל פנימה, ובחוץ יהיה מתחם של בריכה, יותר לנוח?\nאהרון: לא הייתי רוצה לרדת מהמתחם בחוץ. הכלוב הספציפי שהצעת יכול להיות מדהים למכינה קדם-צבאית. חסר לי מקבילים — אני חושב שזה תרגיל חשוב.\nניב: מקבילים יהיה לך. אפשר להכניס, או לעשות מבנה קליסטניקס קבוע. יש מתקן קליסטניקס שאפשר לעשות עליו מתח, עליות מתח, ומקבילים בתוספת.\nאהרון: אני רוצה שזה יישאר חדר כושר. מבחינתי ברגע שיש ספסל שאפשר להוציא החוצה זה נותן מספיק ורסטיליות — דמבלים, קטרגלים בחוץ. אבל אני רואה את המקבילים, וואו.\nניב: זה קצה. בוויז'ן שלי שתהיה לך פינה כזו שאתה מתאמן בה בזמן שאחרים בבריכה. מטורף.\nאהרון: זה לא רק מקבילים, המתקן הזה הוא עולם שלם. אם אצבע אותו בלבן... אתה אומר שהוא מגיע בכל צבע, אז סבבה. המתקן הזה יהיה בחוץ, ואני אטמיע את הפלטות מתחת לריצוף כך שלא ייראו המרובעים האלה.\nניב: כן.\nאהרון: אפשר לשנות את גובה המוטות כרצוננו?\nניב: לא מדויק, אפשר לפתוח אותם. את נושא הגובה אצטרך לבדוק, אבל בעיקרון כן.\nאהרון: עכשיו, סקי גרוף מחובר במיקום שאני מראה — זה מתאים?\nניב: בהחלט, אבל אם תרצה סקי גרוף בחוץ הוא יתמלא באבק.\nאהרון: כן, אני רוצה אותו בחוץ. אני לא מכיר סקי גרוף שמחזיק בחוץ, חוץ מסקי מים.\nניב: נכון, סקי מים הוא הפתרון לחוץ. סקי גרוף רגיל צריך חיבור לתקרת בטון, ואם אין לו מקום מוגדר הוא תופס מקום — צריך להבין יחד מה עושים.\nאהרון: אז תעשה סקי גרוף ואולי כדור מהירות, שני דברים כאלה על הוויטרינה. נראה לי שסגרנו פה אחלה חדר כושר.\nניב: חדר כושר ברמה exceptional לחדרי כושר ביתיים, ממש מרשים.\nאהרון: סקי גרוף — אני יודע שבמקום שאני מתאמן בו הם צמודים לקיר. אתה חושב שזה סבבה?\nניב: אני ממש לא אוהב שזה צמוד לקיר, זה מגביל — אתה רוצה להקיף את הסקי גרוף מכל הצדדים.\nאהרון: אבל זה מחיר כבד מבחינת חלל. אני מסתכל על זה כך: סקי גרוף צמוד לזכוכית, וכשרוצים פוטוורק מסביב פשוט פותחים את הוויטרינה, ואז יש 270 מעלות מסביב.\nניב: יש פתרון — ראיתי פעם סקי גרוף בתוך מסילה קבועה בתקרה, שאפשר להזיז ממקום למקום. זה יכול לפתור לך את העניין.\nאהרון: אידיאלי. אתה יודע לספק את זה?\nניב: אני יכול לבדוק. זה פרופיל אלומיניום מסיבי שהסק יודע לזוז עליו מצד לצד. אני לא מכיר את אמינות המוצר, אז אני מזהיר מראש — לא מציעים אותו רשמית, אבל אבדוק בשמחה. רשמתי בצד. אני עובר פה פעם אחרונה — עדיין לא דיברנו על ציוד קצה, רק על מתקנים קבועים.\nאהרון: אני אתן לך את הרשימה. עריחים לחלל במידה 3.20 על 6 — אתה מחשב את העריחים כולל פחת, נגיד 10%. כלוב משקולות, Cable Fly, הליכון מכני, אופניים, המאוורר שאהבתי, ספסל דמבלים, דמבלים שתבחר, שלושה מוטות, מוט ישר.\nניב: אם הולכים על מוט W, אולי תרצו גם פריצ'ר קרל, יכול להיות רלוונטי כי זה הולך ביחד.\nאהרון: יש פריצ'ר שאני יכול לקפל על הקיר, שלא תופס מקום?\nניב: לא, הוא תופס מקום נכבד, כיסא גדול. רק דקה, אגיד לך את הגדלים — 1.07 על 0.70/0.70 ס״מ.\nאהרון: אם היה מתקפל זה היה אידיאלי.\nניב: הוא לא ניתן לקיפול, הוא קבוע. אבל מוצר עם עמוד W ממש עושה את ההבדל.\nאהרון: אני מסתכל על הגיאומטריה שלו, מנסה שלא יהיה צפוף מדי. אם אקח את האופניים ואסובב אותם 90 מעלות, ואשים את הפריצ'ר כאן, יש לי גישה נוחה לכל הדמבלים.\nניב: פחות הייתי ממליץ — על הרצפה הוא תופס כמעט את כל המקום. אולי לשים אותו מול המשקולות.\nאהרון: מול המשקולות, בטח. וכשאני עובר שם אני לא עובר ליד משהו גבוה, כי זה רק עד גובה 45 ס״מ של הכיסא.\nניב: יכול להיות בסדר. הנה ההליכון, המעבר יהיה קצת צר אבל סביר.\nאהרון: סובבתי את האופניים כך שהם פונים לסקי גרוף, לא לוויטרינה. הם קלים לתנועה, יש להם שני גלגלים קטנים.\nניב: הן מגיעות עם גלגלים, מאוד פשוט להזיז.\nאהרון: אז הכיסא פריצ'ר — אני אנסה לחשוב אם הוא באמת נותן ערך. תשים אותו בשורה נפרדת ונחליט. אני אמדל בתלת-ממד מדויק ואבדוק שלא חרגנו, כי ייתכן שהוא עובר קצת את הפשטות.\nניב: הקרבצה נתונה לדיון, אפשר להוסיף או להוריד מה שתרצה. רשמתי במאמר מוסגר את הפריצ'ר. המוטות — דיברנו על אולימפי, מוט W, ומוט טכניקה קצר.\nאהרון: ומוט טראפ.\nניב: הטראפ שלנו פתוח.\nאהרון: מוט אולימפי כבד 20 קילו, מוט קצר 15 קילו, ומוט W. ארבעה מוטות בסך הכל, עם מתקן על הקיר שתופס אותם כדי שלא יסתובבו בחדר. או אולי מתקן רצפתי שנותן יותר חופש.\nניב: מתקן רצפתי מצוין, אבל תופס מקום. נראותית אני אוהב מתלה קיר. אם זה רק ארבעה מוטות אפשר לתלות על הקיר או על הכלוב. בוא נסכם — אני שולח לך את המייל שלי ונמשיך בהתכתבות. אני רוצה לוודא את ההצעה: וורלורד (הכלוב), Sprinter (הליכון), Airbike (אופניים), פרפר (Cable Fly), מעמד למשקולות, עריחים 20 מ״ר כולל פחת, שני ספסלי Beast, מוטות (אולימפי, W, טראפ פתוח, מוט דיימון 15 קילו), וספסל פריצ'ר. כל זה לא כולל ציוד קצה.\nאהרון: תוריד ספסל Beast אחד — אם מכניסים פריצ'ר אין טעם — ותוסיף את מתקן המקבילים לחוץ.\nניב: מתקן מקבילים לחוץ, סגור. ואני בודק לגבי המסילה לסקי גרוף.\nאהרון: תודה רבה.\nניב: בשמחה.\nאהרון: ספק שניים — שק גדול ואת האגס — שניהם יכולים להיות תלויים על המסילה.\nניב: בוא נראה אם זה אפשרי, אני אשאל את המנהל שלי.\nאהרון: גם אם לא, תכניס להצעה את השק ואת האגס, ולמסילה אני אדאג אצל המסגר שלי.\nניב: אתה מתכוון לשק מים?\nאהרון: לא, אגס רגיל. שק גדול באזור ה-60 קילו — מתאים?\nניב: לגמרי, מתאים למתאמן רגיל.\nאהרון: להוריד ולתלות את הסקי גרוף בכל פעם זה לא הגיוני, נכון?\nניב: זה לא משהו שעושים, הוא כבד, משהו כמו 100 קילו. רק רגע, אהרון — אני רואה מתקן אחסון משמאל לכלוב ועוד מתקן בפינה למעלה, נכון?\nאהרון: אלה עמודות העומדים, הערוקים.\nניב: אה, עמודות. אפשר רצפתי ואפשר לקיר.\nאהרון: לא נתעכב על זה עכשיו, נחליט לפי הציוד שבדקנו.\nניב: אין בעיה. אז זה נראה לי סגור — אני אסדר שההצעה תהיה מוכנה עד מחר בבוקר. היה לי ממש סבבה איתך, אהרון, תודה רבה.\nאהרון: תודה רבה לך.\nניב: בשמחה, להתראות. ביי."},
+  {id:156861577, url:'https://fathom.video/share/znvwoTLYonDZtSuYZZmJwwBxGhgSq7Br', title:'חדר משפחה וחומרי גמר חוץ', date:'21.06.2026', summary:"מטרת הפגישה: גמר פרטי חדר המשפחה והגדרת פלטת חומרי הגמר החיצוניים, לקראת הגשת הבקשה להיתר.\n\nעיקרי הדברים:\n\n• חדר משפחה — חלל רב-תכליתי ונעים לכל הגילאים: פינת משחק לילדים ולאורחים, מפלט לבני הנוער, ואפשרות כמרחב עבודה חלופי עם מבט לכניסה. החדר הוגדל מ-2.45 ל-2.70 מ׳. פינת ישיבה בנויה גדולה (2.43 מ׳), עם אפשרות לטלוויזיה. קיר ההפרדה הנמוך אל הסלון יהיה פרט עץ פתוח (שלבי עץ קבועים) — חיבור בלי ניתוק מלא.\n\n• חלונות — חלון דרומי למקסימום אור טבעי; חלונות מהרצפה עד התקרה בחדר המשפחה. בחדרי הילדים נדחו חלונות רצפה-תקרה משיקולי בטיחות (שבירת זכוכית במשחק) — ייעשו חלונות בגובה רגיל.\n\n• חלון גג (סקיילייט) בחדר הרחצה — אושר. ממוקם מעל האזור הרטוב (מצמצם סיכון מנזילות), עם שיפוע פנימי תלול (~30°) לניקוי עצמי ומניעת הצטברות אבק.\n\n• חוץ ונוף — הגדלת השטח הירוק על חשבון ריצוף: הסרת ריצוף בצד המזרחי (למעט שביל פונקציונלי למחסן), צמצום הטרסה הדרומית לאזור קטן עם פיט אש ומיטות שיזוף. הבריכה הועברה לפינה הצפון-מזרחית, עם אסתטיקה \"ג'ונגלית\" — צמחייה טרופית עשירה (עצי בננה) בשני צדדים. שתילה אסטרטגית (בזיליקום, טימין) להרחקת חרקים מהבית.\n\n• פלטת חומרי חוץ — השראה מפרויקט \"Arid Architects\" (שילוב אבן וטיח). הוחלט על תערובת ~50/50: אבן טבעית ל\"קופסאות\" התחתונות, וטיח גס בגוון שמנת ל\"קופסה\" העליונה. שיטת בנייה מקומית סטנדרטית (צלעות) — מוכרת לקבלנים, מבטיחה איכות ויעילות, ובידוד תרמי ואקוסטי מצוין.\n\nצעדים הבאים:\n• אהרון — יעדכן את התוכניות (חדר המשפחה והשינויים החיצוניים) וייצר מודל תלת-ממד לבדיקה לפני ההיתר.\n• הלקוחות — ישלחו תמונות השראה נוספות.", transcript:''},
+  {id:155087731, url:'https://fathom.video/share/mszouWMGTfYsTkfJDNA6ToyR4QYuZJ7n', title:'עדכון תוכניות · ממ״ד וקומת קרקע', date:'15.06.2026', summary:"מטרת הפגישה: עיון וחידוד התוכניות לפי משוב הלקוחות.\n\nעיקרי הדברים:\n\n• ממ״ד — תכנון מפושט: הסרת הקירות הפנימיים (חלל רחצה אחיד), והחלפת דלת חדר המוזיקה בדלת הזזה נסתרת (pocket) כדי לבטל את ה\"חסימה\" כששתי הדלתות סגורות. הממ״ד הורחב ב-10 ס״מ בכל מימד (ל-1.35×2.70 מ׳) — ניצול יתרת \"שטח השירות\" לשיפור השימושיות בלי לחרוג למחיר הגבוה (~8,000 ₪/מ״ר).\n\n• הרחבת קומת הקרקע — ביטול חדר העבודה הקטן משחרר 1.81 מ׳ רוחב, שיחולקו: +12 ס״מ לחדר רחצה ההורים, +25 ס״מ לחדר עבודה גדול לשניים (~3.98×3.10 מ׳), ו-+1.44 מ׳ להגדלת פינת האוכל והסלון. המדרגות הופכות לאלמנט עיצובי גלוי מהסלון; השטח מתחתן ינוצל לאחסון/מחסן (שמותר לו לחרוג מקו הבניין).\n\n• חלונות — החלונות הפונים לפטיו הם אלמנט תכנוני קריטי: מקסימום זכוכית לתחושת פתיחות, בשילוב פאנלים קבועים (זולים משמעותית) ונפתחים. חלון חדש בחדר ההורים למבט ישיר לבריכה; שני חלונות הסלון ימוקמו למסגור הבריכה. במסדרון העליון — חלון יחיד גדול לתחושת \"הליכה בטבע\" (חלון גדול יחיד חסכוני יותר מכמה קטנים, כי עלות העבודה היא עיקר המחיר). פרטיות בעזרת וילון דו-שכבתי: שקוף ביום, אטום בלילה.\n\n• חדר כושר — אופטימיזציה של הפריסה לציוד שהוגדר (הליכון, מכונת כבלים, ספסל). הוצעה הרחבה אופציונלית של 20 ס״מ (לרוחב 3.10 מ׳) להגברת הוורסטיליות.\n\n• קיר אחסון בכניסה — שבירת המסה המונוליטית בעזרת שילוב חומרים, מרקמים או צבעים, לשילוב חלק בעיצוב הפנים.\n\nצעדים הבאים:\n• אהרון — יעדכן את התוכניות (ממ״ד, קומת קרקע, חלונות) ויסדר מחדש את פריסת חדר הכושר.\n• אמיר ועדן — יחליטו על הרחבת חדר הכושר ב-20 ס״מ, וימסרו מידות ריהוט סופיות לחדר המשפחה לקביעת מיקום החלונות.", transcript:''},
+  {id:142566100, url:'https://fathom.video/share/nH5rsrnkJ-z7qd7yLnDA9W5GbZQ5yegQ', title:'מטבח ואחסון', date:'30.04.2026', summary:"מטרת הפגישה: סגירת פריסת המטבח ופתרון צורכי האחסון.\n\nעיקרי הדברים:\n\n• פריסת מטבח — ה\"מטבחון\" שולב במטבח הראשי ליצירת חלל גדול ופונקציונלי עם ~70% יותר אחסון, ואי נגיש מכל הצדדים. נקבע רצף משטחים לפי הרגלי הבישול: משטח עבודה (1 מ׳) ← כיור ← אזור ייבוש ← כיריים — מונע נזילות ומפשט את התנועה בין המשימות.\n\n• ייבוש כלים — מתקן ייבוש קבוע על המשטח הוחלף במתקן נשלף בתוך ארון, כדי לפנות מקום יקר על המשטח למכשירים (Ninja) ולהכנת אוכל.\n\n• אחסון — עלה צורך באחסון פריטים בכמות (גלוני שמן, שקי קמח 6 ק״ג) ובמכשירים גדולים שבשימוש נדיר (מכונת פסטה). במקום חדר אחסון נפרד, אהרון הציע לנצל את מחסן החוץ הקיים (5.58 מ״ר, גובה 1.95 מ׳) — יעיל יותר מחדר (100% ניצול מול ~40% בחדר) ושומר על שטח הגינה. בפועל הצורך העיקרי התברר כמקפיא 60 ס״מ סטנדרטי, שישולב בקיר הארונות הגבוה של המטבח — כך שחדר אחסון נפרד מתייתר.\n\n• חוץ וגינה — עיקרון מנחה: עיצוב \"צנוע\" שמשאיר את הנוף הטבעי בכוכבי. המסדרון המרכזי יהיה \"ג'ונגל\" של צמחי בר ליצירת מיקרו-אקלים ייחודי; החלונות יתוכננו להיפתח לרווחה לניקוי חיצוני נוח. אסטרטגיית שתילה: צמחי בר לתחזוקה נמוכה ולשילוב אקולוגי. חריג: ערבה בוכייה (\"חלום ילדות\") שתתאפשר עם מחסום שורשים. דרישה מרכזית: גינת ירק ייעודית במיקום עם חשיפה אופטימלית לשמש.\n\nצעדים הבאים:\n• אהרון — ישלב את המקפיא 60 ס״מ בתוכנית המטבח, ויעצב מחדש את המטבח לפי הרצף והאחסון החדשים.\n• כולם — נקבעה פגישה ייעודית לתכנון מרחבי החוץ ליום רביעי, 13.5, בשעה 18:00.", transcript:''}
+];
+function renderMeetings(){
+  const el=$('meetingsList'); if(!el)return;
+  el.innerHTML=MEETINGS.map((m,i)=>{
+    const body=m.summary
+      ? `<div class="mc-body"><div class="mc-sec"><h6>סיכום</h6><div class="mc-text">${esc(m.summary)}</div></div></div>`
+      : `<div class="mc-body"><div class="mc-empty">הסיכום יתווסף בהמשך.</div></div>`;
+    return `<div class="mcard">
+      <div class="mc-head">
+        <span class="mc-date">${esc(m.date)}</span>
+        <span class="mc-title">${esc(m.title)}</span>
+        <a class="mc-watch" href="${esc(m.url)}" target="_blank" rel="noopener">צפייה בהקלטה</a>
+      </div>${body}
+    </div>`;
+  }).join('');
+}
+
+/* ====================== BRAIN (Claude) ====================== */
+function buildKB(){
+  let kb='אתה "המוח" — עוזר חכם של פרויקט בנייה למגורים. ענה תמיד בעברית, בצורה ברורה ולעניין. '
+    +'אם המידע נמצא בנתוני הפרויקט שלהלן — בסס עליו את התשובה. לשאלות כלליות שאינן על הפרויקט, השתמש בידע הכללי שלך וציין בקצרה שזה אינו מתוך נתוני הפרויקט.\n\n'
+    +'== נתוני הפרויקט ==\n'
+    +'וילה פרטית עבור אמיר מרזוק ועדן טריף, בג׳וליס. אדריכל: אהרון לוי, משרד "לוי אדריכלים". פיקוח בנייה: וואיל טריף.\n'
+    +'מאפייני הבית: שתי קומות + גג, בריכה פרטית, 2 חניות מקורות, ממ״ד, סלון ופינת אוכל, מטבח, חדרי שינה, סוויטת הורים, חדרי רחצה, חדר כביסה, מחסן כלים, גג שטוח. בתקציב קיים גם פרק לחדר כושר ביתי.\n'
+    +'תוכניות (תיקיות 000–007): 000 מפה מיצבית, 001 גרסה א׳, 002 גרסה ב׳, 003 גרסה ג׳, 004 גרסה סופית, 005 חישוב שטחים רובוטי, 006 גרמושקה מלאה, 007 סט תוכניות עבודה. שמות הקבצים: AMIREDEN ואז מספר התיקייה.\n'
+    +'סטטוס היתר: התוכניות הוגשו לעיון ב-12.06.2026 (שלב מוקדם מול הוועדה המקומית).\n'
+    +'חתימות לקוחות: גרסה סופית (004) וגרמושקה מלאה (006) מיועדות לחתימת אמיר ועדן.\n'
+    +'אנשי קשר: אהרון לוי 058-424-2112; אמיר מרזוק 052-641-3141; עדן טריף 055-662-7546; וואיל טריף 052-399-7081.\n';
+  const wc=MEETINGS.filter(m=>m.summary||m.transcript);
+  if(wc.length){ kb+='\n== פגישות ==\n';
+    wc.forEach(m=>{ kb+=`\n[פגישה ${m.date} — ${m.title}]\n`+(m.summary?`סיכום: ${m.summary}\n`:'')+(m.transcript?`תמלול: ${m.transcript}\n`:''); });
+  } else { kb+='\nהערה: תוכן הפגישות (סיכומים ותמלולים) טרם נטען למוח.\n'; }
+  return kb;
+}
+let brainHistory=[];
+function renderBrain(){
+  const el=$('brainThread'); if(!el)return;
+  if(!brainHistory.length){ el.innerHTML='<div class="brain-empty">שלום! אני המוח של הפרויקט.\nשאלו אותי על התוכניות, התקציב, הפגישות — או כל דבר אחר.</div>'; return; }
+  el.innerHTML=brainHistory.map(m=>`<div class="bmsg ${m.role==='user'?'user':'bot'}${m._t?' think':''}">${esc(m.content)}</div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+async function sendBrain(){
+  const ti=$('brainText'), btn=$('brainSend'); const q=(ti.value||'').trim(); if(!q)return;
+  ti.value=''; btn.disabled=true;
+  brainHistory.push({role:'user',content:q});
+  brainHistory.push({role:'assistant',content:'חושב…',_t:true});
+  renderBrain();
+  try{
+    const msgs=brainHistory.filter(m=>!m._t).map(m=>({role:m.role,content:m.content}));
+    let text;
+    if(LIVE){
+      const res=await fetch(BACKEND_URL+'/api/brain',{
+        method:'POST', headers:{'Content-Type':'application/json','x-portal-token':ACCESS_TOKEN},
+        body:JSON.stringify({ system:buildKB(), messages:msgs })
+      });
+      if(!res.ok) throw new Error('http '+res.status);
+      const data=await res.json();
+      text=(data.text||'').trim()||'מצטער, לא קיבלתי תשובה.';
+    } else {
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system:buildKB(), messages:msgs })
+      });
+      if(!res.ok) throw new Error('http '+res.status);
+      const data=await res.json();
+      text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim()||'מצטער, לא קיבלתי תשובה.';
+    }
+    brainHistory=brainHistory.filter(m=>!m._t);
+    brainHistory.push({role:'assistant',content:text});
+  }catch(e){
+    brainHistory=brainHistory.filter(m=>!m._t);
+    brainHistory.push({role:'assistant',content:'לא הצלחתי להתחבר למוח כרגע. הצ׳אט פעיל בתצוגה של Claude; באתר המתארח (amirandeden.com) נדרש חיבור שרת קטן — ראו הערה.'});
+  }
+  renderBrain(); btn.disabled=false; ti.focus();
+}
+$('brainSend').addEventListener('click',sendBrain);
+$('brainText').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); sendBrain(); } });
+$('brainNote').textContent='המוח מבוסס על Claude. בתצוגה כאן הוא פעיל; לאתר חי נדרש חיבור שרת מאובטח.';
+
+renderMeetings();
+renderBrain();
+
+/* ====================== EMAILS (live, scoped per client) ====================== */
+function emailsInfo(msg){ const el=$('emailsBox'); if(el) el.innerHTML='<div class="em-info">'+msg+'</div>'; }
+async function renderEmails(){
+  const el=$('emailsBox'); if(!el) return;
+  if(!BACKEND_URL){ emailsInfo('טאב ההתכתבויות יופעל לאחר חיבור השרת. (יש להזין כתובת שרת בקוד.)'); return; }
+  if(!ACCESS_TOKEN){ emailsInfo('כדי לראות את ההתכתבויות שלך, היכנסו דרך הקישור האישי שקיבלתם מהמשרד.'); return; }
+  emailsInfo('טוען התכתבויות…');
+  try{
+    const res=await fetch(BACKEND_URL+'/api/emails',{ headers:{'x-portal-token':ACCESS_TOKEN} });
+    if(res.status===401){ emailsInfo('קוד הגישה אינו תקין. פנו למשרד לקבלת קישור אישי מעודכן.'); return; }
+    if(!res.ok) throw new Error('http '+res.status);
+    const data=await res.json();
+    const th=data.threads||[];
+    if(!th.length){ emailsInfo('לא נמצאו התכתבויות עדיין.'); return; }
+    el.innerHTML=th.map((t,i)=>`
+      <div class="em-thread">
+        <div class="em-th-head" data-act="emtog" data-i="${i}">
+          <span class="em-subj">${esc(t.subject||'(ללא נושא)')}</span>
+          <span class="em-count">${t.messages.length} הודעות</span>
+        </div>
+        <div class="em-th-body" id="emb-${i}">
+          ${t.messages.map(m=>`<div class="em-msg">
+            <div class="em-meta"><span class="em-from">${esc(m.from||'')}</span><span class="em-date">${esc(m.date||'')}</span></div>
+            <div class="em-text">${esc(m.body||'')}</div>
+          </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }catch(e){ emailsInfo('לא הצלחנו לטעון את ההתכתבויות כרגע. נסו שוב מאוחר יותר.'); }
+}
+$('emailsBox').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act="emtog"]'); if(!b)return;
+  const body=document.getElementById('emb-'+b.dataset.i); if(body) body.classList.toggle('on');
+});
+renderEmails();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "amirandeden-backend",
+  "version": "1.0.0",
+  "description": "Live backend for the Marzouk-Tarif residence portal: Claude brain proxy + scoped Gmail correspondence.",
+  "private": true,
+  "dependencies": {
+    "googleapis": "^144.0.0"
+  }
+}
