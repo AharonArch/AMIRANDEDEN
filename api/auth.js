@@ -63,24 +63,82 @@ function gmail(){
 }
 async function sendCodeEmail(to, code, name){
   const subject = 'קוד הכניסה שלך · פורטל לוי אדריכלים';
-  const body =
+  const spaced = String(code).split('').join('&nbsp;&nbsp;'); // breathing room between digits
+
+  const text =
 `שלום ${name},
 
-קוד הכניסה שלך לפורטל הוא:
-
-${code}
+קוד הכניסה שלך לפורטל הוא: ${code}
 
 הקוד תקף ל-10 דקות. אם לא ביקשת קוד כניסה, אפשר להתעלם מהודעה זו.
 
 לוי אדריכלים`;
+
+  const html =
+`<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0B0B0C;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0B0C;">
+    <tr><td align="center" style="padding:40px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#141416;border:1px solid #26262A;border-radius:20px;overflow:hidden;">
+
+        <tr><td align="center" style="padding:44px 32px 8px 32px;">
+          <div style="font-size:54px;line-height:1;color:#FF5A2C;">&#10043;</div>
+        </td></tr>
+
+        <tr><td align="center" style="padding:4px 32px 0 32px;">
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:3px;color:#8A8A92;text-transform:uppercase;">לוי אדריכלים &middot; פורטל לקוחות</div>
+        </td></tr>
+
+        <tr><td align="center" style="padding:18px 32px 0 32px;">
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:800;color:#F5F5F0;">שלום ${name},</div>
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#B6B6BE;padding-top:10px;line-height:1.6;">קוד הכניסה החד&#8209;פעמי שלך לפורטל:</div>
+        </td></tr>
+
+        <tr><td align="center" style="padding:26px 32px 6px 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" style="background:#0B0B0C;border:1px solid #FF5A2C;border-radius:14px;">
+            <tr><td align="center" style="padding:18px 30px;font-family:'Courier New',monospace;font-size:38px;font-weight:700;letter-spacing:2px;color:#FF5A2C;">${spaced}</td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td align="center" style="padding:18px 40px 0 40px;">
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#8A8A92;line-height:1.7;">הקוד תקף ל&#8209;10 דקות. אם לא ביקשת קוד כניסה, אפשר להתעלם מהודעה זו בבטחה.</div>
+        </td></tr>
+
+        <tr><td style="padding:30px 32px 0 32px;"><div style="height:1px;background:#26262A;line-height:1px;font-size:0;">&nbsp;</div></td></tr>
+
+        <tr><td align="center" style="padding:18px 32px 40px 32px;">
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#F5F5F0;font-weight:700;">לוי אדריכלים</div>
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#6A6A72;padding-top:4px;">תכנון. ליווי. בנייה.</div>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const boundary = 'b_' + Date.now();
   const mime = [
     'To: ' + to,
     'Subject: =?UTF-8?B?' + Buffer.from(subject).toString('base64') + '?=',
     'MIME-Version: 1.0',
+    'Content-Type: multipart/alternative; boundary="' + boundary + '"',
+    '',
+    '--' + boundary,
     'Content-Type: text/plain; charset="UTF-8"',
     'Content-Transfer-Encoding: base64',
     '',
-    Buffer.from(body).toString('base64')
+    Buffer.from(text).toString('base64'),
+    '',
+    '--' + boundary,
+    'Content-Type: text/html; charset="UTF-8"',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Buffer.from(html).toString('base64'),
+    '',
+    '--' + boundary + '--'
   ].join('\r\n');
   const raw = Buffer.from(mime).toString('base64url');
   await gmail().users.messages.send({ userId:'me', requestBody:{ raw } });
