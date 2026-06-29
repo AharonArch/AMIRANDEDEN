@@ -64,9 +64,11 @@ module.exports = async function handler(req, res){
     const map = JSON.parse(process.env.CLIENTS || '{}');
     const isAdmin = client.all === true;
 
-    // Admin sees every client's correspondence; a client sees only their own.
+    // Admin sees every CLIENT's correspondence (never the admin's own mailbox);
+    // a client sees only their own. Excluding `all` entries prevents the owner's
+    // address from matching every email in the mailbox.
     const targets = isAdmin
-      ? Object.values(map).filter(c => c.email && c.email !== '*').map(c => ({ name: c.name, email: c.email }))
+      ? Object.values(map).filter(c => c.email && c.email !== '*' && !c.all).map(c => ({ name: c.name, email: c.email }))
       : [{ name: client.name, email: client.email }];
 
     if (!targets.length) return res.status(200).json({ admin: isAdmin, threads: [] });
