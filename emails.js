@@ -6,7 +6,7 @@
 //   GOOGLE_CLIENT_ID , GOOGLE_CLIENT_SECRET , GOOGLE_REFRESH_TOKEN   (Aharon's Gmail, read-only)
 //   CLIENTS  (JSON map token -> { "name": "...", "email": "client@example.com" })
 
-import { google } from 'googleapis';
+const { google } = require('googleapis');
 
 function cors(res){
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -50,7 +50,7 @@ function decodeBody(payload){
 }
 function b64(d){ return Buffer.from(d.replace(/-/g,'+').replace(/_/g,'/'), 'base64').toString('utf8'); }
 
-export default async function handler(req, res){
+module.exports = async function handler(req, res){
   cors(res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'GET')     return res.status(405).json({ error: 'method' });
@@ -61,10 +61,18 @@ export default async function handler(req, res){
 
   try{
     const gmail = gmailClient();
-    const email = client.email;
-    // Only this client's correspondence:
-    const q = `(from:${email} OR to:${email})`;
-    const list = await gmail.users.threads.list({ userId: 'me', q, maxResults: 20 });
+    const map = JSON.parse(process.env.CLIENTS || '{}');
+    const isAdmin = client.all === true;
+
+    // Admin sees every client's correspondence; a client sees only their own.
+    const targets = isAdmin
+      ? Object.values(map).filter(c => c.email && c.email !== '*').map(c => ({ name: c.name, email: c.email }))
+      : [{ name: client.name, email: client.email }];
+
+    if (!targets.length) return res.status(200).json({ admin: isAdmin, threads: [] });
+
+    const q = '(' + targets.map(t => `from:${t.email} OR to:${t.email}`).join(' OR ') + ')';
+    const list = await gmail.users.threads.list({ userId: 'me', q, maxResults: 30 });
     const threads = list.data.threads || [];
 
     const out = [];
@@ -77,19 +85,22 @@ export default async function handler(req, res){
         subject: header(m.payload.headers, 'Subject'),
         body: decodeBody(m.payload).slice(0, 6000)
       }));
+      // which client is this thread with (for the admin view)
+      const blob = msgs.map(m => (m.from + ' ' + m.to)).join(' ').toLowerCase();
+      const who = targets.find(t2 => blob.includes(t2.email.toLowerCase()));
       out.push({
         id: t.id,
         subject: msgs.length ? msgs[0].subject : '(ללא נושא)',
+        with: who ? who.name : '',
         messages: msgs
       });
     }
-    // newest thread first
     out.sort((a,b) => {
       const da = new Date(a.messages[a.messages.length-1]?.date || 0);
       const db = new Date(b.messages[b.messages.length-1]?.date || 0);
       return db - da;
     });
-    return res.status(200).json({ client: { name: client.name, email }, threads: out });
+    return res.status(200).json({ admin: isAdmin, threads: out });
   } catch (e){
     return res.status(500).json({ error: 'server', detail: String(e && e.message || e) });
   }

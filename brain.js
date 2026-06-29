@@ -13,7 +13,7 @@ function clientFor(token){
   catch(e){ return null; }
 }
 
-export default async function handler(req, res){
+module.exports = async function handler(req, res){
   cors(res);
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST')   return res.status(405).json({ error: 'method' });
